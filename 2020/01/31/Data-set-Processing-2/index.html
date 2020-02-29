@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Data set Processing(2)_categorial variableREADME前文介绍了关于缺失值处理的方法，本文介绍分类变量(categorial variable)的处理方法。 分类变量例如性别，城市，程度（离散的）等，为离散量。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Data set Processing(2)">
+<meta property="og:url" content="http://yoursite.com/2020/01/31/Data-set-Processing-2/index.html">
+<meta property="og:site_name" content="杨佳伟的博客">
+<meta property="og:description" content="Data set Processing(2)_categorial variableREADME前文介绍了关于缺失值处理的方法，本文介绍分类变量(categorial variable)的处理方法。 分类变量例如性别，城市，程度（离散的）等，为离散量。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-31T09:41:31.000Z">
+<meta property="article:modified_time" content="2020-02-01T02:48:01.000Z">
+<meta property="article:author" content="杨佳伟">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/01/31/Data-set-Processing-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Data set Processing(2) | 杨佳伟的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杨佳伟的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">In search of fun</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">1</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">12</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/31/Data-set-Processing-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://sm.ms/image/PJ7cZprfV964DjY">
+      <meta itemprop="name" content="杨佳伟">
+      <meta itemprop="description" content="In search of fun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨佳伟的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Data set Processing(2)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-31 17:41:31" itemprop="dateCreated datePublished" datetime="2020-01-31T17:41:31+08:00">2020-01-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-01 10:48:01" itemprop="dateModified" datetime="2020-02-01T10:48:01+08:00">2020-02-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数据预处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Data-set-Processing-2-categorial-variable"><a href="#Data-set-Processing-2-categorial-variable" class="headerlink" title="Data set Processing(2)_categorial variable"></a>Data set Processing(2)_categorial variable</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了关于缺失值处理的方法，本文介绍<strong>分类变量(categorial variable)</strong>的处理方法。</p>
+<p><strong>分类变量</strong>例如性别，城市，程度（离散的）等，为离散量。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="分类变量的处理"><a href="#分类变量的处理" class="headerlink" title="分类变量的处理"></a>分类变量的处理</h3><h4 id="分类变量"><a href="#分类变量" class="headerlink" title="分类变量"></a>分类变量</h4><p><strong>分类变量</strong>是指一类取值再有限集中的变量，比如<em>性别</em>，取值只有<em>男</em>和<em>女</em>两个。<strong>分类变量</strong>一般是离散的，而非连续值。</p>
+<h4 id="数值化"><a href="#数值化" class="headerlink" title="数值化"></a>数值化</h4><p>参考随机变量的处理，我们可以采用<strong>数值化</strong>的方法，即集合中每个元素对应到一个整数，不同元素对应不同整数。</p>
+<p>例如：<em>多</em>对应<em>1</em>，<em>少</em>对应<em>0</em>。</p>
+<p>但是这样再处理<em>性别</em>时不再适用，因为整数存在<strong>序</strong>，而性别的<em>男</em>和<em>女</em>不存在<strong>序</strong>。再模型的建立过程中，由于采取了一系列算数运算，整数的<strong>序</strong>会影响模型的建立过程。</p>
+<h4 id="One-Hot法"><a href="#One-Hot法" class="headerlink" title="One-Hot法"></a>One-Hot法</h4><p>为应对每种取值能对应到整数并且要求地位相等的情况，我们改进了<strong>数值化</strong>的方法。我们新增一些<strong>变量</strong>来表示需要表示的<strong>分类变量</strong>。具体如下：</p>
+<p>用一个新增的<strong>变量</strong>来表示<strong>分类变量</strong>中的一个取值，对每一个<strong>对象</strong>，如果<strong>分类变量</strong>取该值，则该值对应的新增的<strong>变量</strong>取<em>1</em>，如果<strong>分类变量</strong>不取该值，则取<em>0</em>。</p>
+<p>这样就保证了地位的同等。</p>
+<h4 id="直接放弃分类变量"><a href="#直接放弃分类变量" class="headerlink" title="直接放弃分类变量"></a>直接放弃分类变量</h4><p>如果该变量对<strong>目标变量</strong>的预测没有影响，直接放弃即可。</p>
+<h3 id="获取数据集中的分类变量"><a href="#获取数据集中的分类变量" class="headerlink" title="获取数据集中的分类变量"></a>获取数据集中的分类变量</h3><h4 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"></span><br><span class="line">data_path = <span class="string">".\molben_house_price_data.csv"</span></span><br><span class="line">house_price_data = pd.read_csv(data_path)</span><br><span class="line">features = [<span class="string">"rooms"</span>, <span class="string">"age"</span>, <span class="string">"area"</span>, <span class="string">"price"</span>]</span><br><span class="line">X = house_price_data[features]</span><br><span class="line">y = house_price_data.price</span><br><span class="line">train_X, val_X, train_y, val_y = train_test_split(X, y)</span><br><span class="line"></span><br><span class="line"><span class="comment">#s是&lt;class pandas.core.series.Series&gt;，用来存储train_X中有文本值的变量的名称(索引)</span></span><br><span class="line">s = (train_X.dtype == <span class="string">'object'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#s[s]是将s中值为true的量选出来组成一个Series，s[s].index是这个Series的index,即索引,最后转化为list </span></span><br><span class="line">text_list = list(s[s].index)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将text_list打印出来</span></span><br><span class="line">print(text_list)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p><code>Series</code>和<code>DataFrame</code>类似，都是pandas库中核心的数据结构，类似于<code>dic</code>和<code>list</code>。</p>
+<p>详情见</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">help(pd.DataFrame)</span><br><span class="line">help(pd.Series)</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义一个衡量数据集的函数"><a href="#定义一个衡量数据集的函数" class="headerlink" title="定义一个衡量数据集的函数"></a>定义一个衡量数据集的函数</h3><h4 id="程序清单-1"><a href="#程序清单-1" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"></span><br><span class="line"><span class="comment">#定义一个衡量数据集的函数，采用MAE法衡量</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">score_dataset</span><span class="params">(X_train, X_valid, y_train, y_valid)</span>:</span></span><br><span class="line">	model = RandomForestRegressor(n_estimators=<span class="number">100</span>, random_state=<span class="number">0</span>)</span><br><span class="line">	model.fit(X_train, y_train)</span><br><span class="line">	preds = model.predict(X_valid)</span><br><span class="line">	<span class="keyword">return</span> mean_absolute_error(y_valid,preds)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h4><p><code>MAE</code>法之前已经用过。这里采用<code>RandomForest</code>而不是普通的<strong>决策树</strong>，原因在于普通的<strong>决策树</strong>的质量还有其他因素影响，直接采用<code>RandomForest</code>可以不必调整这些因素使之相同。</p>
+<h3 id="数值化-1"><a href="#数值化-1" class="headerlink" title="数值化"></a>数值化</h3><h4 id="程序清单-2"><a href="#程序清单-2" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line"></span><br><span class="line"><span class="comment">#备份原始数据以免原始数据更改</span></span><br><span class="line">label_X_train = X_train.copy()</span><br><span class="line">label_X_valid = X_valid.copy()</span><br><span class="line"></span><br><span class="line"><span class="comment">#把数据进行数值化处理</span></span><br><span class="line">label_encoder = LabelEncoder()</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> text_list:</span><br><span class="line">    label_X_train[col] = label_encoder.fit_transform(X_train[col])</span><br><span class="line">    label_X_valid[col] = label_encoder.transform(X_valid[col])</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-2"><a href="#说明-2" class="headerlink" title="说明"></a>说明</h4><p><code>sklearn</code>库中的<code>LabelEncoder</code>类能够进行数据的<strong>数值化</strong>，直接对<code>DataFrame</code>类的对象进行操作。</p>
+<p><code>LabelEncoder</code>对象的<code>transform</code>方法能够将输入的<code>DataFrame</code>列转化为<strong>数值化的</strong><code>DataFrame</code>列进而赋值给label_encoder。而<code>fit_transform</code>则是设置label_encoder，使前后一致。</p>
+<h3 id="One-Hot法-1"><a href="#One-Hot法-1" class="headerlink" title="One-Hot法"></a>One-Hot法</h3><h4 id="程序清单-3"><a href="#程序清单-3" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line"></span><br><span class="line"><span class="comment">#将训练数据和测试数据One-Hot处理</span></span><br><span class="line">OH_encoder = OneHotEncoder(Handle_unknown=<span class="string">'ignore'</span>, sparse=<span class="literal">False</span>)</span><br><span class="line">OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[text_list]))</span><br><span class="line">OH_cols_valid = pd.DataFrame(OH_encoder.transform(X_valid[text_list]))</span><br><span class="line"></span><br><span class="line"><span class="comment">#函数fit_transform会将column index丢失，需要手动补回</span></span><br><span class="line">OH_cols_train.index = X_train.index</span><br><span class="line">OH_cols_valid.index = X_valid.index</span><br><span class="line"></span><br><span class="line"><span class="comment">#将得到的DataFrame对象替换原来的几列</span></span><br><span class="line">num_X_train = X_train.drop(object_cols, axis=<span class="number">1</span>)</span><br><span class="line">num_X_valid = X_valid.drop(object_cols, axis=<span class="number">1</span>)</span><br><span class="line">OH_X_train = pd.concat([num_X_train,OH_cols_train],axis=<span class="number">1</span>)</span><br><span class="line">OH_X_valid = pd.concat([num_X_valid,OH_cols_train],axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-3"><a href="#说明-3" class="headerlink" title="说明"></a>说明</h4><p><code>sklearn</code>库中的<code>LabelEncoder</code>类能够使用<strong>One-Hot法</strong>对数据进行转换。</p>
+<p><code>transform</code>方法的返回对象是<code>Series</code>对象，需要进行手动转换和一些处理。</p>
+<p>处理过程可如清单所示，也可按照之前的循环逐个处理（没有必要）。</p>
+<h3 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MAE_OH=score_dataset(OH_X_train, OH_X_valid, y_train, y_valid)</span><br><span class="line">MAE_VL=score_dataset(label_X_train, label_X_valid, y_train, y_valid)</span><br><span class="line">print(MAE_OH,<span class="string">"and"</span>,MAE_VL)</span><br></pre></td></tr></table></figure>
+
+<p>至此，所有工作结束。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>杨佳伟
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2020/01/31/Data-set-Processing-2/" title="Data set Processing(2)">http://yoursite.com/2020/01/31/Data-set-Processing-2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/26/Data-set-processing/" rel="prev" title="Data set processing">
+      <i class="fa fa-chevron-left"></i> Data set processing
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/02/Cross-Validation/" rel="next" title="Cross-Validation">
+      Cross-Validation <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-set-Processing-2-categorial-variable"><span class="nav-text">Data set Processing(2)_categorial variable</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分类变量的处理"><span class="nav-text">分类变量的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#分类变量"><span class="nav-text">分类变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数值化"><span class="nav-text">数值化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#One-Hot法"><span class="nav-text">One-Hot法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接放弃分类变量"><span class="nav-text">直接放弃分类变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取数据集中的分类变量"><span class="nav-text">获取数据集中的分类变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#程序清单"><span class="nav-text">程序清单</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#说明"><span class="nav-text">说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义一个衡量数据集的函数"><span class="nav-text">定义一个衡量数据集的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#程序清单-1"><span class="nav-text">程序清单</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#说明-1"><span class="nav-text">说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数值化-1"><span class="nav-text">数值化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#程序清单-2"><span class="nav-text">程序清单</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#说明-2"><span class="nav-text">说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#One-Hot法-1"><span class="nav-text">One-Hot法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#程序清单-3"><span class="nav-text">程序清单</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#说明-3"><span class="nav-text">说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评估"><span class="nav-text">评估</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="杨佳伟"
+      src="https://sm.ms/image/PJ7cZprfV964DjY">
+  <p class="site-author-name" itemprop="name">杨佳伟</p>
+  <div class="site-description" itemprop="description">In search of fun</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/2101831558" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;2101831558" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:y2101831558@gmail.com" title="E-Mail → mailto:y2101831558@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/yourname" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">杨佳伟</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
