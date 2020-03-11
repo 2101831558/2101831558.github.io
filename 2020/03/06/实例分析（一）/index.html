@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/03/06/SNyLP2CmTwEt5fA.png">
 <meta property="article:published_time" content="2020-03-06T13:19:36.000Z">
-<meta property="article:modified_time" content="2020-03-06T13:46:19.290Z">
+<meta property="article:modified_time" content="2020-03-11T04:30:10.863Z">
 <meta property="article:author" content="杨佳伟">
 <meta property="article:tag" content="爬虫">
 <meta property="article:tag" content="大数据">
@@ -210,10 +210,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-03-06 21:19:36 / 修改时间：21:46:19" itemprop="dateCreated datePublished" datetime="2020-03-06T21:19:36+08:00">2020-03-06</time>
+              <time title="创建时间：2020-03-06 21:19:36" itemprop="dateCreated datePublished" datetime="2020-03-06T21:19:36+08:00">2020-03-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-11 12:30:10" itemprop="dateModified" datetime="2020-03-11T12:30:10+08:00">2020-03-11</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -260,10 +266,24 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'Cookie'</span>:<span class="string">'OCSSID=4df0bjva6j7ejussu8al3eqo03'</span>,</span><br><span class="line">    <span class="string">'User-Agent'</span>:<span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'</span></span><br><span class="line">                 <span class="string">'(KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'</span>,</span><br><span class="line">&#125;</span><br><span class="line">home_url = <span class="string">'https://travel.qunar.com/p-cs299878-shanghai-jingdian-1-'</span></span><br></pre></td></tr></table></figure>
 
 <p>这是HTTP header，和网站的地址，保留最后一个数字，以便之后控制访问的页面。</p>
-<h4 id="生成页面URL地址的列表"><a href="#生成页面URL地址的列表" class="headerlink" title="生成页面URL地址的列表"></a>生成页面URL地址的列表</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_urls</span><span class="params">(n)</span>:</span></span><br><span class="line">    lst = [home_url+str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,n+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">return</span> lst</span><br></pre></td></tr></table></figure>
+<h4 id="生成页面URL地址的列表"><a href="#生成页面URL地址的列表" class="headerlink" title="生成页面URL地址的列表"></a>生成页面URL地址的列表</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_urls</span><span class="params">(url,n=<span class="number">5</span>)</span>:</span></span><br><span class="line">    lst = [url+str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,n+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">return</span> lst</span><br></pre></td></tr></table></figure>
 
 <p><code>lst</code>中包含有前n个页面的URL地址。</p>
-<p>（未完待续。。）</p>
+<h4 id="使用requests模块获取一页的HTML代码"><a href="#使用requests模块获取一页的HTML代码" class="headerlink" title="使用requests模块获取一页的HTML代码"></a>使用<code>requests</code>模块获取一页的HTML代码</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">url_list = get_urls(home_url,<span class="number">10</span>)</span><br><span class="line"><span class="comment"># 先获取第一页</span></span><br><span class="line">ri = requests.get(url_list[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># 使用BS模块解析获取的HTML代码</span></span><br><span class="line">soupi = BeautifulSoup(ri.text, <span class="string">"lxml"</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="提取需要的信息"><a href="#提取需要的信息" class="headerlink" title="提取需要的信息"></a>提取需要的信息</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找到每条评论</span></span><br><span class="line">all_com = soupi.find(<span class="string">"ul"</span>,class_=<span class="string">'list_item clrfix'</span>).find_all(<span class="string">'li'</span>)</span><br><span class="line"><span class="comment"># 解析每条评论</span></span><br><span class="line">inf_list = []</span><br><span class="line"><span class="keyword">for</span> com <span class="keyword">in</span> all_com:</span><br><span class="line">    inf_dic = &#123;&#125;</span><br><span class="line">    inf_dic[<span class="string">'lat'</span>] = i[<span class="string">'data-lat'</span>]</span><br><span class="line">    inf_dic[<span class="string">'lng'</span>] = i[<span class="string">'data-lng'</span>]</span><br><span class="line">    inf_dic[<span class="string">'景点名称'</span>] = i.find(<span class="string">'span'</span>, class_=<span class="string">'cn_tit'</span>).text</span><br><span class="line">    inf_dic[<span class="string">'攻略数量'</span>] = i.find(<span class="string">'div'</span>, class_=<span class="string">"strategy_sum"</span>).text</span><br><span class="line">    inf_dic[<span class="string">'评论数量'</span>] = i.find(<span class="string">'div'</span>, class_=<span class="string">"comment_sum"</span>).text</span><br><span class="line">    inf_dic[<span class="string">'景点排名'</span>] = i.find(<span class="string">'span'</span>,class_=<span class="string">'sum'</span>).text        </span><br><span class="line">    inf_dic[<span class="string">'星级'</span>] = i.find(<span class="string">'span'</span>, class_=<span class="string">'total_star'</span>).find(<span class="string">'span'</span>)[<span class="string">'style'</span>].split(<span class="string">':'</span>)[<span class="number">1</span>]</span><br><span class="line">    inf_list.append(inf_dic)</span><br></pre></td></tr></table></figure>
+
+<p>这样，每条评论中的信息就以<code>dic</code>的形式保存在<code>inf_list</code>中了。</p>
+<p>其中一个<code>dic</code>：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;'lat': '31.<span class="number">146751</span>', 'lng': '121.<span class="number">669396</span>', '景点名称': '上海迪士尼度假区Shanghai Disney Resort', '攻略数量': '164', '评论数量': '<span class="number">2506</span>3', '景点排名': '3%', '星级': '96%'&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="转化为DataFrame"><a href="#转化为DataFrame" class="headerlink" title="转化为DataFrame"></a>转化为<code>DataFrame</code></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将字典列表转化为DataFrame</span></span><br><span class="line">df = pd.DataFrame()</span><br><span class="line">df_onePage = pd.DataFrame(inf_list)</span><br><span class="line">df = pd.contact([df, dfi])</span><br><span class="line">df.reset_index(inplace=<span class="literal">True</span>, drop=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这样就把列表转化为<code>Pandas</code>中的<code>DataFrame</code>二维结构，即带有行，列索引的二维表格。</p>
+<h4 id="导出为Excel格式"><a href="#导出为Excel格式" class="headerlink" title="导出为Excel格式"></a>导出为Excel格式</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.to_excel(<span class="string">"....xmls"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后使用excel表格的三维地图绘制功能就可以啦。</p>
+<p>当然，DataFrame本身也有数据可视化的功能，可以参考官方文档。</p>
 
     </div>
 
@@ -368,7 +388,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#实例分析（一）"><span class="nav-text">实例分析（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简述"><span class="nav-text">简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成页面URL地址的列表"><span class="nav-text">生成页面URL地址的列表</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#实例分析（一）"><span class="nav-text">实例分析（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简述"><span class="nav-text">简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成页面URL地址的列表"><span class="nav-text">生成页面URL地址的列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用requests模块获取一页的HTML代码"><span class="nav-text">使用requests模块获取一页的HTML代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#提取需要的信息"><span class="nav-text">提取需要的信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#转化为DataFrame"><span class="nav-text">转化为DataFrame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导出为Excel格式"><span class="nav-text">导出为Excel格式</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
