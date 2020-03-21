@@ -119,17 +119,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">3</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">7</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">14</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">15</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -178,6 +178,89 @@
             
 
   <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
+      <meta itemprop="name" content="杨佳伟">
+      <meta itemprop="description" content="In search of fun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨佳伟的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">贪吃蛇（一）</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-21 21:01:56 / 修改时间：21:55:57" itemprop="dateCreated datePublished" datetime="2020-03-21T21:01:56+08:00">2020-03-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%80%A7%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index"><span itemprop="name">微性项目</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%80%A7%E9%A1%B9%E7%9B%AE/%E8%B4%AA%E5%90%83%E8%9B%87%E5%B0%8F%E6%B8%B8%E6%88%8F/" itemprop="url" rel="index"><span itemprop="name">贪吃蛇小游戏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="README"><a href="#README" class="headerlink" title="README"></a>README</h1><p>刚学了一些python的语法，于是写了一个贪吃蛇的小游戏。虽然游戏很小，不过因为是第一次用python写GUI程序，还是遇到一些问题，所以贴出来总结下。这个使用pygame库，主要使用里面的事件处理和2D图形模块。</p>
+<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="明确目标"><a href="#明确目标" class="headerlink" title="明确目标"></a>明确目标</h2><p>目标很明确，就是诺基亚手机里面的都有的贪吃蛇游戏，蛇可以在固定的区域活动（移动和转向），可以吃食物变长，但是不能撞到自己。过程中要统计吃的食物个数，还可以修改蛇的速度，Game Over之后按空格键重新开始。</p>
+<h2 id="分解问题"><a href="#分解问题" class="headerlink" title="分解问题"></a>分解问题</h2><h3 id="3个对象"><a href="#3个对象" class="headerlink" title="3个对象"></a>3个对象</h3><p>按照面向对象的思想，这个程序可以拆解为3个对象，游戏的控制和2D界面，蛇和食物。他们之间和关系可以用一张图来表示：</p>
+<img src="https://i.loli.net/2020/03/21/fkFGLyTzX6tuRZ3.png" alt="pic_1.PNG" style="zoom:80%;" />
+
+<h3 id="Snake类"><a href="#Snake类" class="headerlink" title="Snake类"></a><code>Snake</code>类</h3><p>蛇必须有自身位置的信息，还有方向的信息，将这些设置为属性，初始化时必须选择初值。蛇可以进行<strong>移动</strong>，<strong>改变方向</strong>，<strong>吃食物</strong>，<strong>死亡</strong>的行为，每个行为将对应一个方法。</p>
+<p>如下图：</p>
+<img src="https://i.loli.net/2020/03/21/lMyQPDInBVAwUEc.png" alt="snake_1.PNG" style="zoom:80%;" />
+
+<h3 id="Food类"><a href="#Food类" class="headerlink" title="Food类"></a><code>Food</code>类</h3><p>食物需要包含自身位置信息，设为属性，初始化时需要设置初值。食物再被吃掉后需要更新位置，应该是随机的，但是能再蛇身上，不能再区域外。</p>
+<h3 id="Main类"><a href="#Main类" class="headerlink" title="Main类"></a><code>Main</code>类</h3><p>这个类承担的任务比较多，首先应该包含基本的信息，比如区域的像素大小，每个方格的边长，然后还有更新蛇的时间间隔，以及其他的包括文字显示参数（大小，字体，位置，颜色），还有背景，蛇，食物方块的颜色。其中，区域的像素大小和方格的边长信息再<code>Snake</code>和<code>Food</code>类中都要使用，所以设置为公共变量。</p>
+<p>（填坑中。。。）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
         
   
   
@@ -955,106 +1038,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/23/Model-Validation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
-      <meta itemprop="name" content="杨佳伟">
-      <meta itemprop="description" content="In search of fun">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="杨佳伟的博客">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/23/Model-Validation/" class="post-title-link" itemprop="url">Model Validation</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-01-23 10:41:40" itemprop="dateCreated datePublished" datetime="2020-01-23T10:41:40+08:00">2020-01-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-01 12:28:59" itemprop="dateModified" datetime="2020-02-01T12:28:59+08:00">2020-02-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0/" itemprop="url" rel="index"><span itemprop="name">模型评估</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Model-Validation"><a href="#Model-Validation" class="headerlink" title="Model Validation"></a>Model Validation</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了数据的处理，模型的选择建立，用模型进行了预估。</p>
-<p>本文将介绍如何对模型的预测效果进行科学的评价，以便进行模型的优化和选择。</p>
-<ul>
-<li>量化指标<ul>
-<li>MAE</li>
-</ul>
-</li>
-<li>防止过拟合<ul>
-<li>测试数据和训练数据分开</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/01/23/Model-Validation/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1127,20 +1110,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

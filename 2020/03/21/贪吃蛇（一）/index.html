@@ -20,20 +20,24 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="scikit-learn学习笔记READMEscikit-learn库同样是数据分析中重要的库之一，调用时简称sklearn。 使用sklearn库，可以根据DataFrame对象建立模型(Fitting model)，从而使用模型进行预测。 模型的建立是数据科学中的关键，有条件应该自己了解背后的算法并实现其功能，本文仅介绍scikit的使用。">
+  <meta name="description" content="README刚学了一些python的语法，于是写了一个贪吃蛇的小游戏。虽然游戏很小，不过因为是第一次用python写GUI程序，还是遇到一些问题，所以贴出来总结下。这个使用pygame库，主要使用里面的事件处理和2D图形模块。 开始明确目标目标很明确，就是诺基亚手机里面的都有的贪吃蛇游戏，蛇可以在固定的区域活动（移动和转向），可以吃食物变长，但是不能撞到自己。过程中要统计吃的食物个数，还可以修改蛇">
 <meta property="og:type" content="article">
-<meta property="og:title" content="scikit-learn">
-<meta property="og:url" content="http://yoursite.com/2020/01/22/scikit-learn/index.html">
+<meta property="og:title" content="贪吃蛇（一）">
+<meta property="og:url" content="http://yoursite.com/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="杨佳伟的博客">
-<meta property="og:description" content="scikit-learn学习笔记READMEscikit-learn库同样是数据分析中重要的库之一，调用时简称sklearn。 使用sklearn库，可以根据DataFrame对象建立模型(Fitting model)，从而使用模型进行预测。 模型的建立是数据科学中的关键，有条件应该自己了解背后的算法并实现其功能，本文仅介绍scikit的使用。">
+<meta property="og:description" content="README刚学了一些python的语法，于是写了一个贪吃蛇的小游戏。虽然游戏很小，不过因为是第一次用python写GUI程序，还是遇到一些问题，所以贴出来总结下。这个使用pygame库，主要使用里面的事件处理和2D图形模块。 开始明确目标目标很明确，就是诺基亚手机里面的都有的贪吃蛇游戏，蛇可以在固定的区域活动（移动和转向），可以吃食物变长，但是不能撞到自己。过程中要统计吃的食物个数，还可以修改蛇">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-01-22T08:52:34.000Z">
-<meta property="article:modified_time" content="2020-02-01T04:33:28.031Z">
+<meta property="og:image" content="https://i.loli.net/2020/03/21/fkFGLyTzX6tuRZ3.png">
+<meta property="og:image" content="https://i.loli.net/2020/03/21/lMyQPDInBVAwUEc.png">
+<meta property="article:published_time" content="2020-03-21T13:01:56.000Z">
+<meta property="article:modified_time" content="2020-03-21T13:55:57.161Z">
 <meta property="article:author" content="杨佳伟">
-<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="贪吃蛇">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/03/21/fkFGLyTzX6tuRZ3.png">
 
-<link rel="canonical" href="http://yoursite.com/2020/01/22/scikit-learn/">
+<link rel="canonical" href="http://yoursite.com/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/">
 
 
 <script id="page-configurations">
@@ -45,7 +49,7 @@
   };
 </script>
 
-  <title>scikit-learn | 杨佳伟的博客</title>
+  <title>贪吃蛇（一） | 杨佳伟的博客</title>
   
 
 
@@ -185,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/22/scikit-learn/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
@@ -198,7 +202,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          scikit-learn
+          贪吃蛇（一）
         </h1>
 
         <div class="post-meta">
@@ -207,31 +211,21 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-01-22 16:52:34" itemprop="dateCreated datePublished" datetime="2020-01-22T16:52:34+08:00">2020-01-22</time>
+              <time title="创建时间：2020-03-21 21:01:56 / 修改时间：21:55:57" itemprop="dateCreated datePublished" datetime="2020-03-21T21:01:56+08:00">2020-03-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-01 12:33:28" itemprop="dateModified" datetime="2020-02-01T12:33:28+08:00">2020-02-01</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%80%A7%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index"><span itemprop="name">微性项目</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%80%BB%E8%A7%88/" itemprop="url" rel="index"><span itemprop="name">总览</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%80%A7%E9%A1%B9%E7%9B%AE/%E8%B4%AA%E5%90%83%E8%9B%87%E5%B0%8F%E6%B8%B8%E6%88%8F/" itemprop="url" rel="index"><span itemprop="name">贪吃蛇小游戏</span></a>
                 </span>
             </span>
 
@@ -253,32 +247,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="scikit-learn学习笔记"><a href="#scikit-learn学习笔记" class="headerlink" title="scikit-learn学习笔记"></a>scikit-learn学习笔记</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>scikit-learn库同样是数据分析中重要的库之一，调用时简称sklearn。</p>
-<p>使用sklearn库，可以根据DataFrame对象建立模型(Fitting model)，从而使用模型进行预测。</p>
-<p>模型的建立是数据科学中的关键，有条件应该自己了解背后的算法并实现其功能，本文仅介绍scikit的使用。</p>
-<a id="more"></a>
+        <h1 id="README"><a href="#README" class="headerlink" title="README"></a>README</h1><p>刚学了一些python的语法，于是写了一个贪吃蛇的小游戏。虽然游戏很小，不过因为是第一次用python写GUI程序，还是遇到一些问题，所以贴出来总结下。这个使用pygame库，主要使用里面的事件处理和2D图形模块。</p>
+<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="明确目标"><a href="#明确目标" class="headerlink" title="明确目标"></a>明确目标</h2><p>目标很明确，就是诺基亚手机里面的都有的贪吃蛇游戏，蛇可以在固定的区域活动（移动和转向），可以吃食物变长，但是不能撞到自己。过程中要统计吃的食物个数，还可以修改蛇的速度，Game Over之后按空格键重新开始。</p>
+<h2 id="分解问题"><a href="#分解问题" class="headerlink" title="分解问题"></a>分解问题</h2><h3 id="3个对象"><a href="#3个对象" class="headerlink" title="3个对象"></a>3个对象</h3><p>按照面向对象的思想，这个程序可以拆解为3个对象，游戏的控制和2D界面，蛇和食物。他们之间和关系可以用一张图来表示：</p>
+<img src="https://i.loli.net/2020/03/21/fkFGLyTzX6tuRZ3.png" alt="pic_1.PNG" style="zoom:80%;" />
 
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="建立和使用模型的关键"><a href="#建立和使用模型的关键" class="headerlink" title="建立和使用模型的关键"></a>建立和使用模型的关键</h3><ol>
-<li>使用哪种模型？决策树，还是其他的模型？</li>
-<li>建立预测模型</li>
-<li>使用模型进行预测</li>
-<li>评估预测的准确性</li>
-</ol>
-<h3 id="使用sklearn库建立模型"><a href="#使用sklearn库建立模型" class="headerlink" title="使用sklearn库建立模型"></a>使用sklearn库建立模型</h3><h4 id="导入模型"><a href="#导入模型" class="headerlink" title="导入模型"></a>导入模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br></pre></td></tr></table></figure>
+<h3 id="Snake类"><a href="#Snake类" class="headerlink" title="Snake类"></a><code>Snake</code>类</h3><p>蛇必须有自身位置的信息，还有方向的信息，将这些设置为属性，初始化时必须选择初值。蛇可以进行<strong>移动</strong>，<strong>改变方向</strong>，<strong>吃食物</strong>，<strong>死亡</strong>的行为，每个行为将对应一个方法。</p>
+<p>如下图：</p>
+<img src="https://i.loli.net/2020/03/21/lMyQPDInBVAwUEc.png" alt="snake_1.PNG" style="zoom:80%;" />
 
-<h4 id="构造模型实例"><a href="#构造模型实例" class="headerlink" title="构造模型实例"></a>构造模型实例</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = DecisionTreeRegressor(random_state=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-
-<p><code>random_state</code>许多机器学习模型在<strong>fitting</strong>时具有一定的<strong>随机性</strong>，因此在构造实例的时候指定<code>random_state</code>的值为1可以保证每次构建模型的时候都相同。但不同的<code>random_state</code>不会使模型的预测效果发生改变。</p>
-<h4 id="构建模型"><a href="#构建模型" class="headerlink" title="构建模型"></a>构建模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.fit(X,y)</span><br></pre></td></tr></table></figure>
-
-<h4 id="使用模型进行预测"><a href="#使用模型进行预测" class="headerlink" title="使用模型进行预测"></a>使用模型进行预测</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"Making predictions for the following 5 houses:"</span>)</span><br><span class="line">print(X.head())</span><br><span class="line">print(<span class="string">"The predictions are"</span>)</span><br><span class="line">print(model.predict(X.head()))</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>小贴士：<ul>
-<li>可以先使用<strong>training data</strong>进行预测来检验模型的效果</li>
-</ul>
-</li>
-</ul>
+<h3 id="Food类"><a href="#Food类" class="headerlink" title="Food类"></a><code>Food</code>类</h3><p>食物需要包含自身位置信息，设为属性，初始化时需要设置初值。食物再被吃掉后需要更新位置，应该是随机的，但是能再蛇身上，不能再区域外。</p>
+<h3 id="Main类"><a href="#Main类" class="headerlink" title="Main类"></a><code>Main</code>类</h3><p>这个类承担的任务比较多，首先应该包含基本的信息，比如区域的像素大小，每个方格的边长，然后还有更新蛇的时间间隔，以及其他的包括文字显示参数（大小，字体，位置，颜色），还有背景，蛇，食物方块的颜色。其中，区域的像素大小和方格的边长信息再<code>Snake</code>和<code>Food</code>类中都要使用，所以设置为公共变量。</p>
+<p>（填坑中。。。）</p>
 
     </div>
 
@@ -294,7 +274,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://yoursite.com/2020/01/22/scikit-learn/" title="scikit-learn">http://yoursite.com/2020/01/22/scikit-learn/</a>
+    <a href="http://yoursite.com/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/" title="贪吃蛇（一）">http://yoursite.com/2020/03/21/贪吃蛇（一）/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -305,7 +285,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E8%B4%AA%E5%90%83%E8%9B%87/" rel="tag"><i class="fa fa-tag"></i> 贪吃蛇</a>
           </div>
 
         
@@ -314,13 +295,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/01/22/Pandas/" rel="prev" title="Pandas">
-      <i class="fa fa-chevron-left"></i> Pandas
+    <a href="/2020/03/06/%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="实例分析（一）">
+      <i class="fa fa-chevron-left"></i> 实例分析（一）
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/23/Model-Validation/" rel="next" title="Model Validation">
-      Model Validation <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -385,7 +363,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#scikit-learn学习笔记"><span class="nav-text">scikit-learn学习笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建立和使用模型的关键"><span class="nav-text">建立和使用模型的关键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用sklearn库建立模型"><span class="nav-text">使用sklearn库建立模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#导入模型"><span class="nav-text">导入模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造模型实例"><span class="nav-text">构造模型实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建模型"><span class="nav-text">构建模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用模型进行预测"><span class="nav-text">使用模型进行预测</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#明确目标"><span class="nav-text">明确目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分解问题"><span class="nav-text">分解问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3个对象"><span class="nav-text">3个对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snake类"><span class="nav-text">Snake类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Food类"><span class="nav-text">Food类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Main类"><span class="nav-text">Main类</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
