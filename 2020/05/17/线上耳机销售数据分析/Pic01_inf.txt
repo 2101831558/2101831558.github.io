@@ -1,0 +1,5 @@
+HTML£º<a href="https://sm.ms/image/tQGn9KlbuA8q7kP" target="_blank"><img src="https://i.loli.net/2020/05/18/tQGn9KlbuA8q7kP.png" ></a>
+BBCode£º[url=https://sm.ms/image/tQGn9KlbuA8q7kP][img]https://i.loli.net/2020/05/18/tQGn9KlbuA8q7kP.png[/img][/url]
+Markdown£º![Pic01_Tag.PNG](https://i.loli.net/2020/05/18/tQGn9KlbuA8q7kP.png)
+Link only£ºhttps://sm.ms/image/tQGn9KlbuA8q7kP
+Removal Link (to delete the image)£ºhttps://sm.ms/delete/4PtlcdzHS9Tqn6CIBE8ugjFRKG
