@@ -1,0 +1,12 @@
+URL结构:<a href="https://sm.ms/image/cTpE37P6SVI2txu" target="_blank"><img src="https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png" ></a>
+![URL结构.PNG](https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png)
+
+服务器相应:<a href="https://sm.ms/image/6vfsc9STRGm8rLN" target="_blank"><img src="https://i.loli.net/2020/05/26/6vfsc9STRGm8rLN.png" ></a>
+![服务器相应.PNG](https://i.loli.net/2020/05/26/6vfsc9STRGm8rLN.png)
+
+响应状态码:<a href="https://sm.ms/image/dwk9MH47ARE5zpG" target="_blank"><img src="https://i.loli.net/2020/05/26/dwk9MH47ARE5zpG.png" ></a>
+![响应状态码.PNG](https://i.loli.net/2020/05/26/dwk9MH47ARE5zpG.png)
+
+浏览器请求:<a href="https://sm.ms/image/ofuO6xPMpEdmL3C" target="_blank"><img src="https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png" ></a>
+![浏览器请求.PNG](https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png)
+

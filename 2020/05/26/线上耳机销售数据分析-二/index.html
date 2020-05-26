@@ -20,17 +20,26 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="In search of fun">
-<meta property="og:type" content="website">
-<meta property="og:title" content="杨佳伟的博客">
-<meta property="og:url" content="http://yoursite.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/page/2/index.html">
+  <meta name="description" content="线上耳机销售数据分析（二）README在爬取喵喵折查询商品历史价格的过程中，遇到了反爬虫机制，本文主要解决反爬虫的问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线上耳机销售数据分析(二)">
+<meta property="og:url" content="http://yoursite.com/2020/05/26/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%BA%8C/index.html">
 <meta property="og:site_name" content="杨佳伟的博客">
-<meta property="og:description" content="In search of fun">
+<meta property="og:description" content="线上耳机销售数据分析（二）README在爬取喵喵折查询商品历史价格的过程中，遇到了反爬虫机制，本文主要解决反爬虫的问题。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/26/6vfsc9STRGm8rLN.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/26/dwk9MH47ARE5zpG.png">
+<meta property="article:published_time" content="2020-05-26T09:53:45.000Z">
+<meta property="article:modified_time" content="2020-05-26T13:42:01.156Z">
 <meta property="article:author" content="杨佳伟">
+<meta property="article:tag" content="爬虫">
+<meta property="article:tag" content="大数据">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png">
 
-<link rel="canonical" href="http://yoursite.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/page/2/">
+<link rel="canonical" href="http://yoursite.com/2020/05/26/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%BA%8C/">
 
 
 <script id="page-configurations">
@@ -38,11 +47,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false
+    isPost: true
   };
 </script>
 
-  <title>标签: 机器学习 | 杨佳伟的博客</title>
+  <title>线上耳机销售数据分析(二) | 杨佳伟的博客</title>
   
 
 
@@ -177,77 +186,143 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">机器学习
-          <small>标签</small>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/26/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%BA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
+      <meta itemprop="name" content="杨佳伟">
+      <meta itemprop="description" content="In search of fun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨佳伟的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线上耳机销售数据分析(二)
         </h1>
-      </div>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-26 17:53:45 / 修改时间：21:42:01" itemprop="dateCreated datePublished" datetime="2020-05-26T17:53:45+08:00">2020-05-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%88%AC%E8%99%AB/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">线上耳机销售数据分析</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2020</h1>
-    </div>
+        <h1 id="线上耳机销售数据分析（二）"><a href="#线上耳机销售数据分析（二）" class="headerlink" title="线上耳机销售数据分析（二）"></a>线上耳机销售数据分析（二）</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在爬取喵喵折查询商品历史价格的过程中，遇到了反爬虫机制，本文主要解决反爬虫的问题。</p>
+<a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-01-20T21:15:16+08:00"
-              content="2020-01-20">
-          01-20
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/01/20/%E5%AF%92%E5%81%87%E4%BB%BB%E5%8A%A1/" itemprop="url">
-            <span itemprop="name">寒假任务</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-01-20T18:04:16+08:00"
-              content="2020-01-20">
-          01-20
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/01/20/Machine-Learning/" itemprop="url">
-            <span itemprop="name">Machine Learning</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h3><h4 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h4><p>Uniform Resource Locator 是是因特网的万维网服务程序上用于指定信息位置的表示方法。常见的URL由协议类型(Protocol)，主机(Host)，路径(Path)，查询参数(Query)组成。</p>
+<p><img src="https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png" alt="URL结构.PNG"></p>
+<h4 id="两方的行为"><a href="#两方的行为" class="headerlink" title="两方的行为"></a>两方的行为</h4><p>在互联网中，有两种角色，客户端和服务器。客户端向服务器提供<strong>请求(Request)</strong>，服务器接受请求，返回<strong>响应(Response)</strong>到客户端。返回的响应包含了所请求的<strong>资源(Resource)</strong>，包括HTML文档，图片，文本等等。</p>
+<p>一个请求包括五部分，<strong>请求方式，路径和查询参数，HTTP协议版本，请求头(Request headers)，请求体&lt;可选&gt;(Request body)</strong>。请求方式包括GET,POST等。请求头可以设置接受响应资源的类型等（有规范的样式）。请求体是需要发送给服务器的数据（比如搜索的文本内容）。</p>
+<p><img src="https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png" alt="浏览器请求.PNG"></p>
+<p>一个响应包括四部分，<strong>HTTP版本，相应状态码，响应头(Response headers)，响应体(Response body)</strong>。响应状态码如图。</p>
+<p><img src="https://i.loli.net/2020/05/26/6vfsc9STRGm8rLN.png" alt="服务器相应.PNG"></p>
+<p><img src="https://i.loli.net/2020/05/26/dwk9MH47ARE5zpG.png" alt="响应状态码.PNG"></p>
+<h3 id="解铃还须系铃人"><a href="#解铃还须系铃人" class="headerlink" title="解铃还须系铃人"></a>解铃还须系铃人</h3><p>selenium在运行的时候会暴露出一些预定义的Javascript变量（特征字符串），例如”window.navigator.webdriver”，在非selenium环境下其值为undefined，而在selenium环境下，其值为true。</p>
 
     </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>杨佳伟
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2020/05/26/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%BA%8C/" title="线上耳机销售数据分析(二)">http://yoursite.com/2020/05/26/线上耳机销售数据分析-二/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"><i class="fa fa-tag"></i> 爬虫</a>
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"><i class="fa fa-tag"></i> 大数据</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/17/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" rel="prev" title="线上耳机销售数据分析">
+      <i class="fa fa-chevron-left"></i> 线上耳机销售数据分析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
   </div>
-  
-  
-  
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">1</a><span class="page-number current">2</span>
-  </nav>
-
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC80ODMzNS8yNDgyOQ=="></div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -294,6 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线上耳机销售数据分析（二）"><span class="nav-text">线上耳机销售数据分析（二）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本原理"><span class="nav-text">基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL"><span class="nav-text">URL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两方的行为"><span class="nav-text">两方的行为</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解铃还须系铃人"><span class="nav-text">解铃还须系铃人</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -452,6 +528,21 @@
 
   
 
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
 
 </body>
 </html>
