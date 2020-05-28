@@ -10,3 +10,8 @@ URL结构:<a href="https://sm.ms/image/cTpE37P6SVI2txu" target="_blank"><img src="
 浏览器请求:<a href="https://sm.ms/image/ofuO6xPMpEdmL3C" target="_blank"><img src="https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png" ></a>
 ![浏览器请求.PNG](https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png)
 
+Request截图：<a href="https://sm.ms/image/GhxMe5POU1jzByt" target="_blank"><img src="https://i.loli.net/2020/05/28/GhxMe5POU1jzByt.png" ></a>
+![Request截图.PNG](https://i.loli.net/2020/05/28/GhxMe5POU1jzByt.png)
+
+参数：<a href="https://sm.ms/image/fHC1VOMxQe3yRZJ" target="_blank"><img src="https://i.loli.net/2020/05/28/fHC1VOMxQe3yRZJ.png" ></a>
+![参数.PNG](https://i.loli.net/2020/05/28/fHC1VOMxQe3yRZJ.png)
