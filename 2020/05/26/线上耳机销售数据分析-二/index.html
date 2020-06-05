@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/05/28/fHC1VOMxQe3yRZJ.png">
 <meta property="og:image" content="https://i.loli.net/2020/05/28/GhxMe5POU1jzByt.png">
 <meta property="article:published_time" content="2020-05-26T09:53:45.000Z">
-<meta property="article:modified_time" content="2020-05-28T05:21:43.361Z">
+<meta property="article:modified_time" content="2020-05-31T15:06:07.854Z">
 <meta property="article:author" content="杨佳伟">
 <meta property="article:tag" content="爬虫">
 <meta property="article:tag" content="大数据">
@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">17</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">18</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-28 13:21:43" itemprop="dateModified" datetime="2020-05-28T13:21:43+08:00">2020-05-28</time>
+                <time title="修改时间：2020-05-31 23:06:07" itemprop="dateModified" datetime="2020-05-31T23:06:07+08:00">2020-05-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,6 +291,21 @@
 <img src="https://i.loli.net/2020/05/28/GhxMe5POU1jzByt.png" alt="Request截图.PNG" style="zoom: 67%;" />
 
 <p>如上图，<code>Request</code>的请求体中的nvcVal参数为加密后的，几乎无规律可循。而RequestURL地址也可以看出，请求调用的是网站内部的api接口，参数是加密的。</p>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><h4 id="模拟request"><a href="#模拟request" class="headerlink" title="模拟request"></a>模拟<code>request</code></h4><p>这种方法需要详细分析网站的JS代码，找到参数生成的方法，从而发送请求。但是本人还没有熟悉过<code>Javascript</code>的语法，分析起来比较费劲。</p>
+<h4 id="全真模拟手动操作浏览器"><a href="#全真模拟手动操作浏览器" class="headerlink" title="全真模拟手动操作浏览器"></a>全真模拟手动操作浏览器</h4><p>需要模拟的操作，输入，鼠标移动，点击，滚动条滚动，删除，还有最重要的元素选择。</p>
+<p>元素选择可以通过<code>CSS selector</code>，<code>Xpath</code>，还有某些库自定的选择方法，但是总体上都是需要从HTML标签的名称和属性来考虑。选择可以固定选择，也可以选择多项，得到一个<code>list</code>。</p>
+<p>如果需要翻页，可以模拟点击，也可以直接分析如果是<code>GET</code>请求，则可以分析URL，使用循环来代替点击下一步。</p>
+<h5 id="反爬虫技巧"><a href="#反爬虫技巧" class="headerlink" title="反爬虫技巧"></a>反爬虫技巧</h5><ul>
+<li>使用<code>time.sleep()</code>函数和<code>random.random()</code>函数来降低访问的频率（和手速相仿）和使用随机频率，从而防止判定为爬虫。</li>
+<li>高频率访问不会封禁而只是需要验证（简单的滑块或者是比较复杂的拼图验证等），如果比较好过的话，可以放开速度爬。验证操作时，注意弹出的验证窗口不再本窗口中。</li>
+<li>使用异常处理机制处理不规则的验证情况。</li>
+<li>使用<code>pyppeteer</code>的<code>page.evaluate()</code>函数执行屏蔽浏览器预定的变量的JS代码防止被识别浏览器指纹。</li>
+<li>换账号爬取，使用不同账号交替登录爬取。</li>
+</ul>
+<h5 id="遇到的错误"><a href="#遇到的错误" class="headerlink" title="遇到的错误"></a>遇到的错误</h5><ul>
+<li>元素无法选择到，这多半是由于没有加载完全，可以使用<code>sleep</code>等待或者<code>waitSelector()</code>函数来等待元素加载完全。</li>
+<li>元素选择在不同的页面不同，可以自由调整，使用基本的键鼠操作。</li>
+</ul>
 
     </div>
 
@@ -330,7 +345,10 @@
     <a href="/2020/05/17/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" rel="prev" title="线上耳机销售数据分析">
       <i class="fa fa-chevron-left"></i> 线上耳机销售数据分析
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/05/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95/" rel="next" title="朴素贝叶斯算法">
+      朴素贝叶斯算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -395,7 +413,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线上耳机销售数据分析（二）"><span class="nav-text">线上耳机销售数据分析（二）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本原理"><span class="nav-text">基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL"><span class="nav-text">URL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两方的行为"><span class="nav-text">两方的行为</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解铃还须系铃人"><span class="nav-text">解铃还须系铃人</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Request-Headers"><span class="nav-text">Request Headers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于用户行为的反爬虫"><span class="nav-text">基于用户行为的反爬虫</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态页面的反爬虫"><span class="nav-text">动态页面的反爬虫</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Javascript反爬虫"><span class="nav-text">Javascript反爬虫</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标网站"><span class="nav-text">目标网站</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线上耳机销售数据分析（二）"><span class="nav-text">线上耳机销售数据分析（二）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本原理"><span class="nav-text">基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL"><span class="nav-text">URL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两方的行为"><span class="nav-text">两方的行为</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解铃还须系铃人"><span class="nav-text">解铃还须系铃人</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Request-Headers"><span class="nav-text">Request Headers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于用户行为的反爬虫"><span class="nav-text">基于用户行为的反爬虫</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态页面的反爬虫"><span class="nav-text">动态页面的反爬虫</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Javascript反爬虫"><span class="nav-text">Javascript反爬虫</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标网站"><span class="nav-text">目标网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践"><span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模拟request"><span class="nav-text">模拟request</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#全真模拟手动操作浏览器"><span class="nav-text">全真模拟手动操作浏览器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#反爬虫技巧"><span class="nav-text">反爬虫技巧</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#遇到的错误"><span class="nav-text">遇到的错误</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -411,7 +429,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
