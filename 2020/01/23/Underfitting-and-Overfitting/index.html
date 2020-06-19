@@ -20,18 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Underfitting and OverfittingREADME上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，过拟合(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而拟合不足(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。">
+  <meta name="description" content="OverfittingREADME上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，过拟合(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而拟合不足(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Underfitting and Overfitting">
 <meta property="og:url" content="http://yoursite.com/2020/01/23/Underfitting-and-Overfitting/index.html">
 <meta property="og:site_name" content="杨佳伟的博客">
-<meta property="og:description" content="Underfitting and OverfittingREADME上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，过拟合(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而拟合不足(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。">
+<meta property="og:description" content="OverfittingREADME上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，过拟合(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而拟合不足(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/06/19/v8rwq9uSUTOInpb.jpg">
 <meta property="article:published_time" content="2020-01-23T09:21:51.000Z">
-<meta property="article:modified_time" content="2020-02-01T04:30:25.779Z">
+<meta property="article:modified_time" content="2020-06-19T00:32:25.615Z">
 <meta property="article:author" content="杨佳伟">
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/06/19/v8rwq9uSUTOInpb.jpg">
 
 <link rel="canonical" href="http://yoursite.com/2020/01/23/Underfitting-and-Overfitting/">
 
@@ -215,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-01 12:30:25" itemprop="dateModified" datetime="2020-02-01T12:30:25+08:00">2020-02-01</time>
+                <time title="修改时间：2020-06-19 08:32:25" itemprop="dateModified" datetime="2020-06-19T08:32:25+08:00">2020-06-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,20 +255,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Underfitting-and-Overfitting"><a href="#Underfitting-and-Overfitting" class="headerlink" title="Underfitting and Overfitting"></a>Underfitting and Overfitting</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，<strong>过拟合</strong>(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而<strong>拟合不足</strong>(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。</p>
+        <h1 id="Overfitting"><a href="#Overfitting" class="headerlink" title="Overfitting"></a>Overfitting</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，<strong>过拟合</strong>(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而<strong>拟合不足</strong>(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。</p>
 <a id="more"></a>
 
 <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="过拟合和拟合不足现象产生的原因"><a href="#过拟合和拟合不足现象产生的原因" class="headerlink" title="过拟合和拟合不足现象产生的原因"></a>过拟合和拟合不足现象产生的原因</h3><h4 id="决策树模型的原理"><a href="#决策树模型的原理" class="headerlink" title="决策树模型的原理"></a>决策树模型的原理</h4><p>根据不同的<strong>属性(features)</strong>将<strong>测试样本(testing data)</strong>不断分类，直到决策树的叶节点，再根据叶节点中的<strong>训练样本(training data)</strong>的<strong>预测目标(prediction target)</strong>来预测该<strong>测试样本</strong>的<strong>预测目标(prediction target)</strong>。</p>
 <blockquote>
-<p><strong>Overfitting:</strong> capturing spurious patterns that won’t recur in the future, leading to less accurate predictions, or</p>
-<p><strong>Underfitting:</strong> failing to capture relevant patterns, again leading to less accurate predictions.</p>
+<p><strong>Overfitting:</strong> 给定一个假设空间H，一个假设h属于H，如果存在其他的假设h’属于H,使得在训练样例上h的错误率比h’小，但在整个实例分布上h’比h的错误率小，那么就说假设h过度拟合训练数据。</p>
 </blockquote>
-<h4 id="问题产生"><a href="#问题产生" class="headerlink" title="问题产生"></a>问题产生</h4><ul>
-<li>如果决策树的深度和每次分的类太多，会造成叶节点中<strong>训练样本</strong>个数太少，导致根据其中<strong>训练样本</strong>的<strong>预测目标</strong>进行的预测不准确（统计原则上样本越多越准确）。</li>
-<li>反之如果分类过少，比如只有2个，那么对于每个<strong>测试样本</strong>的区分不够，造成预测不准确。</li>
+<h4 id="过拟合的原因"><a href="#过拟合的原因" class="headerlink" title="过拟合的原因"></a>过拟合的原因</h4><ul>
+<li><p><strong>建模抽样样本不随机</strong>，比如像预测全体人类的身高，结果样本选择都是男性。</p>
+</li>
+<li><p><strong>训练数据中的噪点过多</strong>，使得模型拟合了这些噪点从而对于正常的数据不能很好的预测。</p>
+</li>
+<li><p><strong>逻辑假设不成立</strong>，所有的建模都有一个逻辑假设，就是规律在前后基本不变，但是这个假设不一定成立，比如在冰河时期建立的的天气变化模型，肯定不能用来预测现在的天气。</p>
+</li>
+<li><p>如果<strong>决策树的深度和每次分的类太多</strong>，会造成叶节点中<strong>训练样本</strong>个数太少，导致根据其中<strong>训练样本</strong>的<strong>预测目标</strong>进行的预测不准确（统计原则上样本越多越准确）。如下图：</p>
+</li>
 </ul>
-<p>（自行脑补U形曲线.jpg）</p>
-<h3 id="问题解决的办法"><a href="#问题解决的办法" class="headerlink" title="问题解决的办法"></a>问题解决的办法</h3><p>找到U形曲线的最低点（不容易），我们暂且采用最直接的方法，代值法。代码如下：</p>
+<p><img src="https://i.loli.net/2020/06/19/v8rwq9uSUTOInpb.jpg" alt="过拟合.jpg"></p>
+<h3 id="问题解决的办法"><a href="#问题解决的办法" class="headerlink" title="问题解决的办法"></a>问题解决的办法</h3><ul>
+<li><p>保证取样的科学性。</p>
+</li>
+<li><p>决策树中可以采取剪枝的方法，还可以使用随机森林。</p>
+</li>
+<li><p>找到U形曲线的最低点（不容易），我们暂且采用最直接的方法，代值法。代码如下：</p>
+</li>
+</ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_mae</span><span class="params">(max_leaf_nodes,train_X,train_y,val_X,val_y)</span>:</span></span><br><span class="line">	model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes,random_state=<span class="number">0</span>)</span><br><span class="line">	model.fit(train_X,train_y)</span><br><span class="line">	preds_val = model.predict(val_X)</span><br><span class="line">	mae = mean_absolute_error(val_y,preds_val)</span><br><span class="line">	<span class="keyword">return</span> mae</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> max_leaf_nodes <span class="keyword">in</span> [<span class="number">5</span>,<span class="number">50</span>,<span class="number">500</span>,<span class="number">5000</span>]:</span><br><span class="line">	my_mae = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)</span><br><span class="line">	print(<span class="string">"Max leaf nodes: %d \t\t Mean Absolute Error: %d"</span> %(max_leaf_nodes, my_mae))</span><br></pre></td></tr></table></figure>
@@ -275,7 +289,6 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">5</span>  		 	 <span class="attr">Mean Absolute Error:</span>  <span class="number">347380</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">50</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">258171</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">500</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">243495</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">5000</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">254983</span></span><br></pre></td></tr></table></figure>
 
 <p>最后选择最好的<code>max_leaf_nodes</code>构建模型就可以了。</p>
-<p>（还是数学重要，逃<del>~</del>）</p>
 
     </div>
 
@@ -382,7 +395,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Underfitting-and-Overfitting"><span class="nav-text">Underfitting and Overfitting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#过拟合和拟合不足现象产生的原因"><span class="nav-text">过拟合和拟合不足现象产生的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#决策树模型的原理"><span class="nav-text">决策树模型的原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题产生"><span class="nav-text">问题产生</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题解决的办法"><span class="nav-text">问题解决的办法</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Overfitting"><span class="nav-text">Overfitting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#过拟合和拟合不足现象产生的原因"><span class="nav-text">过拟合和拟合不足现象产生的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#决策树模型的原理"><span class="nav-text">决策树模型的原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过拟合的原因"><span class="nav-text">过拟合的原因</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题解决的办法"><span class="nav-text">问题解决的办法</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
