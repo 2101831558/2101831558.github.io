@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Pandas 学习笔记README介绍pandas库的基本使用方法。pandas库是数据科学中最常用的库之一，pandas库提供了海量的操作，用pandas可以方便高效地处理数据。">
+  <meta name="description" content="Pandas 学习笔记README介绍Pandas库的基本使用方法。Pandas库是数据科学中最常用的库之一，Pandas库提供了海量的操作，用Pandas可以方便高效地处理数据。Pandas 包含两种基本的数据结构Series和DataFrame，分别是有索引的一维和二维数据结构。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pandas">
 <meta property="og:url" content="http://yoursite.com/2020/01/22/Pandas/index.html">
 <meta property="og:site_name" content="杨佳伟的博客">
-<meta property="og:description" content="Pandas 学习笔记README介绍pandas库的基本使用方法。pandas库是数据科学中最常用的库之一，pandas库提供了海量的操作，用pandas可以方便高效地处理数据。">
+<meta property="og:description" content="Pandas 学习笔记README介绍Pandas库的基本使用方法。Pandas库是数据科学中最常用的库之一，Pandas库提供了海量的操作，用Pandas可以方便高效地处理数据。Pandas 包含两种基本的数据结构Series和DataFrame，分别是有索引的一维和二维数据结构。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-01-22T07:07:07.000Z">
 <meta property="article:modified_time" content="2020-01-22T08:58:00.000Z">
@@ -122,17 +122,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">6</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">20</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">24</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -247,19 +247,62 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Pandas-学习笔记"><a href="#Pandas-学习笔记" class="headerlink" title="Pandas 学习笔记"></a>Pandas 学习笔记</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>介绍pandas库的基本使用方法。pandas库是数据科学中最常用的库之一，pandas库提供了海量的操作，用pandas可以方便高效地处理数据。</p>
+        <h1 id="Pandas-学习笔记"><a href="#Pandas-学习笔记" class="headerlink" title="Pandas 学习笔记"></a>Pandas 学习笔记</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>介绍Pandas库的基本使用方法。Pandas库是数据科学中最常用的库之一，Pandas库提供了海量的操作，用Pandas可以方便高效地处理数据。Pandas 包含两种基本的数据结构Series和DataFrame，分别是有索引的一维和二维数据结构。</p>
 <a id="more"></a>
 
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="导入pandas"><a href="#导入pandas" class="headerlink" title="导入pandas"></a>导入pandas</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#第一种方式</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="comment">#第二种方式</span></span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="导入pandas"><a href="#导入pandas" class="headerlink" title="导入pandas"></a>导入pandas</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br></pre></td></tr></table></figure>
 
-<p>以上代码可以导入pandas库以便使用。</p>
-<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><p>是一种类似表格的对象</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#csv文件地路径</span></span><br><span class="line">file_path = ‘/input/data.csv’</span><br><span class="line"><span class="comment">#从文件中读取数据并返回DataFrame对象</span></span><br><span class="line">data = pd.read_csv(file_path)</span><br><span class="line"><span class="comment">#将data以表格的形式打印</span></span><br><span class="line">data.describe()</span><br></pre></td></tr></table></figure>
+<h3 id="Series"><a href="#Series" class="headerlink" title="Series"></a>Series</h3><p>类似于dic，但是索引可以重复，而且具有顺序（dic无序）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">arr = np.array([<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, np.NaN, <span class="number">10</span>])</span><br><span class="line">series1 = pd.Series(arr, index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>]) <span class="comment"># 初始化的时候设置index索引</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="Prediction-Target"><a href="#Prediction-Target" class="headerlink" title="Prediction Target"></a>Prediction Target</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#从data中用dot-notation选择代表房子价格的一列</span></span><br><span class="line">y = data.Price</span><br></pre></td></tr></table></figure>
+<p>此时按列表的顺序创建了一个Series对象，默认的index为0, 1, 2…</p>
+<h4 id="设置索引"><a href="#设置索引" class="headerlink" title="设置索引"></a>设置索引</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">series1.index = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>]</span><br></pre></td></tr></table></figure>
 
-<p>y代表data中的一列，是我们希望做出预测的数据。</p>
-<h4 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#从data中用dot-notation选择代表房子面积，位置等的几列</span></span><br><span class="line">features = [<span class="string">'Area'</span>, <span class="string">'Position'</span>, <span class="string">'Rooms'</span>]</span><br><span class="line">X = data[features]</span><br></pre></td></tr></table></figure>
+<p>设置索引的个数和Series元素的个数应该相同。</p>
+<h4 id="取值"><a href="#取值" class="headerlink" title="取值"></a>取值</h4><p>可以通过顺序索引和index取值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过顺序索引取值</span></span><br><span class="line">series1[<span class="number">0</span>] <span class="comment">#返回第一个元素1</span></span><br><span class="line"><span class="comment"># 通过index取值</span></span><br><span class="line">series1[<span class="string">'a'</span>] <span class="comment">#返回index为'a'的元素</span></span><br></pre></td></tr></table></figure>
+
+<p>还可以通过切片来获取多值，可以通过顺序索引，也可通过index</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">series1[<span class="number">0</span>:<span class="number">1</span>] <span class="comment">#左闭右开</span></span><br><span class="line">series1[<span class="string">'a'</span>:<span class="string">"e"</span>] <span class="comment">#两边都是闭区间</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="缺失值处理"><a href="#缺失值处理" class="headerlink" title="缺失值处理"></a>缺失值处理</h4><p>Series对象可以设置一个含有元素的条件表达式，然后取出所有使得条件表达式值为真的元素，构建一个新的Series对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">series2 = series1[series1 &gt; <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+
+<p>其中series1 &gt; 3会返回一个索引和series1相同，而值为True或False的Sereis对象。</p>
+<p>而利用pd中的isnull函数可以取出非空值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">series3 = series1[pd.isnull(series1)]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Series对象的加减运算"><a href="#Series对象的加减运算" class="headerlink" title="Series对象的加减运算"></a>Series对象的加减运算</h4><p>两个Series对象之间可以进行加减运算</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s1 = pd.Series([<span class="number">1</span>, <span class="number">2</span>, np.NaN], index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line">s2 = pd.Series([<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>], index=[<span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>])</span><br><span class="line">s3 = s1 + s2</span><br></pre></td></tr></table></figure>
+
+<p>此时，python自动按照s1,s2对其索引，两个都有的值为两个元素相加，有没有的赋值为NaN。s3 = [NaN, 6, NaN, NaN]</p>
+<h4 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h4><p>$[1]$<a href="https://blog.csdn.net/weixin_42107718/article/details/98649208?utm_source=app" target="_blank" rel="noopener">Series详解CSDN博客</a></p>
+<p>$[2]$ <a href="https://www.pypandas.cn/docs/reference.html" target="_blank" rel="noopener">Pandas参考文档中文版</a></p>
+<h3 id="索引对象"><a href="#索引对象" class="headerlink" title="索引对象"></a>索引对象</h3><p>DataFrame的行和列均有索引</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(type(df3.index))</span><br><span class="line"><span class="comment"># 返回&lt;class 'pandas.core.indexes.range.RangeIndex'&gt;</span></span><br><span class="line">print(type(df3.columns))</span><br><span class="line"><span class="comment"># 返回&lt;class 'pandas.core.indexes.base.Index'&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>索引对象负责管理轴标签(行和列)，和其他元数据，如轴名称。</p>
+<p>通过索引对象可以从DataFrame对象中获得某个索引值或者进行重新赋值</p>
+<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><p>是一种类似表格的对象，以下列举了DataFrame的基本操作</p>
+<h4 id="读取CSV"><a href="#读取CSV" class="headerlink" title="读取CSV"></a>读取CSV</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#csv文件地路径</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">path = os.path.dirname(__file__)</span><br><span class="line">file_path = os.path.jion(path, <span class="string">'filename.csv'</span>)</span><br><span class="line"><span class="comment">#从文件中读取数据并返回DataFrame对象</span></span><br><span class="line">df = pd.read_csv(file_path)</span><br><span class="line"><span class="comment">#将data以表格的形式打印</span></span><br><span class="line">df.describe()</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过list-dic生成"><a href="#通过list-dic生成" class="headerlink" title="通过list/dic生成"></a>通过list/dic生成</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#一维数组</span></span><br><span class="line">list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">df = pd.DataFrame(list, columns=[<span class="string">'cols'</span>], index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line"><span class="comment">#高维数组</span></span><br><span class="line">list2 = [[<span class="string">'Alan'</span>, <span class="number">170</span>, <span class="number">20</span>], [<span class="string">"John"</span>, <span class="number">180</span>, <span class="number">22</span>]]</span><br><span class="line">df2 = pd.DataFrame(list2, columns=[<span class="string">'Name'</span>, <span class="string">'Height'</span>, <span class="string">'Age'</span>], index = [<span class="string">'a'</span>, <span class="string">'b'</span>])</span><br><span class="line"><span class="comment">#通过dic生成</span></span><br><span class="line">dic = &#123;<span class="string">'Name'</span>: [<span class="string">'Alan'</span>, <span class="string">'John'</span>], <span class="string">'Height'</span>: [<span class="number">170</span>, <span class="number">180</span>], <span class="string">'Age'</span>: [<span class="number">20</span>, <span class="number">22</span>]&#125;</span><br><span class="line">df3 = pd.DataFrame(dic, index=[<span class="number">1</span>, <span class="number">2</span>])</span><br><span class="line"><span class="comment">#设置行名</span></span><br><span class="line">df2.index = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="comment">#设置列名</span></span><br><span class="line">df2.columns = [<span class="string">'name'</span>, <span class="string">'height'</span>, <span class="string">'age'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>注意，在设置行和列名（索引）的时候，大小一定要和DataFrame的行列数相同，否则报错。</p>
+<h4 id="loc-ix-iloc"><a href="#loc-ix-iloc" class="headerlink" title="loc/ix/iloc"></a>loc/ix/iloc</h4><p>loc通过标签值索引，iloc通过标签顺序索引（数），并且支持切片索引。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(type(df3.loc[<span class="number">0</span>]))</span><br><span class="line">print(type(df3[<span class="string">'name'</span>]))</span><br><span class="line"><span class="comment">#均返回&lt;class 'pandas.core.series.Series'&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>取出某行后可以对某行进行等操作，如下</p>
+<h4 id="行操作"><a href="#行操作" class="headerlink" title="行操作"></a>行操作</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#生成行索引列表</span></span><br><span class="line">df2.index</span><br><span class="line"><span class="comment">#取出某行</span></span><br><span class="line">df2.loc[<span class="string">'a'</span>]</span><br><span class="line"><span class="comment">#添加行</span></span><br><span class="line">df2.loc[<span class="string">'c'</span>] = [<span class="string">'Bob'</span>, <span class="number">175</span>, <span class="number">18</span>]</span><br><span class="line"><span class="comment">#删除行</span></span><br><span class="line">df2.drop(<span class="string">'c'</span>)</span><br><span class="line"><span class="comment">#修改行</span></span><br><span class="line">df2.loc[<span class="string">'b'</span>] = [<span class="string">'AAlan'</span>, <span class="number">176</span>, <span class="number">20</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="列操作"><a href="#列操作" class="headerlink" title="列操作"></a>列操作</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按列名取出某列</span></span><br><span class="line">df[<span class="string">'name'</span>]</span><br><span class="line"><span class="comment"># 增加列</span></span><br><span class="line">df[<span class="string">'salary'</span>] = [<span class="number">100</span>, <span class="number">200</span>]</span><br><span class="line"><span class="comment"># 删除列</span></span><br><span class="line">df.pop(<span class="string">'sex'</span>)</span><br><span class="line"><span class="comment"># 修改整列</span></span><br><span class="line">df[<span class="string">'age'</span>] = [<span class="string">'Amy'</span>, <span class="string">'John'</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="筛选"><a href="#筛选" class="headerlink" title="筛选"></a>筛选</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 实例</span></span><br><span class="line">df4 = df3[df3[<span class="string">"age"</span>] &gt; <span class="number">0</span>]</span><br><span class="line"><span class="comment"># 返回一个DF，包含df3中所有age属性&gt;0的行</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h4><h4 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h4><h4 id="统计函数"><a href="#统计函数" class="headerlink" title="统计函数"></a>统计函数</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用sum方法可以统计DF的列之和行之和</span></span><br><span class="line">df5 = df3.sum()</span><br><span class="line"><span class="comment"># 返回只有一行的列之和</span></span><br><span class="line">i = df3.loc[<span class="number">0</span>].sum()</span><br><span class="line"><span class="comment"># 返回df3的第0行之和</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p>$[1]$<a href="https://blog.csdn.net/u014281392/article/details/75331570" target="_blank" rel="noopener">DataFrame的基本操作</a></p>
+<h3 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#从data中用dot-notation选择代表房子面积，位置等的几列</span></span><br><span class="line">features = [<span class="string">'Area'</span>, <span class="string">'Position'</span>, <span class="string">'Rooms'</span>]</span><br><span class="line">X = data[features]</span><br></pre></td></tr></table></figure>
 
 <p>X代表data中的几列，是我们选择出来的features，也是我们预测Prediction Target的依据。</p>
 <p>选择不同的features往往会得出不同的预测效果，所以我们以后还要了解更好地选择features的方法。</p>
@@ -268,6 +311,12 @@
 <li>使用describe()和head()函数可以将X，y，和data可视化处理，以便观察并发现联系</li>
 </ul>
 </li>
+</ul>
+<h3 id="学习心得"><a href="#学习心得" class="headerlink" title="学习心得"></a>学习心得</h3><p>如何快速入门面向对象语言的框架：</p>
+<ul>
+<li>了解框架的外延，调用和依赖的库</li>
+<li>在官方文档中浏览框架定义的类型种类(type函数)</li>
+<li>根据实际项目中需要的行为了解类型的属性和方法</li>
 </ul>
 
     </div>
@@ -375,7 +424,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pandas-学习笔记"><span class="nav-text">Pandas 学习笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入pandas"><span class="nav-text">导入pandas</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrame"><span class="nav-text">DataFrame</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Prediction-Target"><span class="nav-text">Prediction Target</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Features"><span class="nav-text">Features</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pandas-学习笔记"><span class="nav-text">Pandas 学习笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入pandas"><span class="nav-text">导入pandas</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Series"><span class="nav-text">Series</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设置索引"><span class="nav-text">设置索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#取值"><span class="nav-text">取值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缺失值处理"><span class="nav-text">缺失值处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Series对象的加减运算"><span class="nav-text">Series对象的加减运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考资料："><span class="nav-text">参考资料：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引对象"><span class="nav-text">索引对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrame"><span class="nav-text">DataFrame</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#读取CSV"><span class="nav-text">读取CSV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过list-dic生成"><span class="nav-text">通过list&#x2F;dic生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#loc-ix-iloc"><span class="nav-text">loc&#x2F;ix&#x2F;iloc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#行操作"><span class="nav-text">行操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列操作"><span class="nav-text">列操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#筛选"><span class="nav-text">筛选</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排序"><span class="nav-text">排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分组"><span class="nav-text">分组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#统计函数"><span class="nav-text">统计函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-text">参考链接</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Features"><span class="nav-text">Features</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习心得"><span class="nav-text">学习心得</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -391,20 +440,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
