@@ -122,17 +122,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">7</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">13</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">16</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">24</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">27</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -283,7 +283,7 @@
 
 <p>索引对象负责管理轴标签(行和列)，和其他元数据，如轴名称。</p>
 <p>通过索引对象可以从DataFrame对象中获得某个索引值或者进行重新赋值</p>
-<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><p>是一种类似表格的对象，以下列举了DataFrame的基本操作</p>
+<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><p>是一种类似表格的对象，依赖于Series对象，行和列均可以看作Series对象。以下列举了DataFrame的基本操作：</p>
 <h4 id="读取CSV"><a href="#读取CSV" class="headerlink" title="读取CSV"></a>读取CSV</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#csv文件地路径</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">path = os.path.dirname(__file__)</span><br><span class="line">file_path = os.path.jion(path, <span class="string">'filename.csv'</span>)</span><br><span class="line"><span class="comment">#从文件中读取数据并返回DataFrame对象</span></span><br><span class="line">df = pd.read_csv(file_path)</span><br><span class="line"><span class="comment">#将data以表格的形式打印</span></span><br><span class="line">df.describe()</span><br></pre></td></tr></table></figure>
 
 <h4 id="通过list-dic生成"><a href="#通过list-dic生成" class="headerlink" title="通过list/dic生成"></a>通过list/dic生成</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#一维数组</span></span><br><span class="line">list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">df = pd.DataFrame(list, columns=[<span class="string">'cols'</span>], index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line"><span class="comment">#高维数组</span></span><br><span class="line">list2 = [[<span class="string">'Alan'</span>, <span class="number">170</span>, <span class="number">20</span>], [<span class="string">"John"</span>, <span class="number">180</span>, <span class="number">22</span>]]</span><br><span class="line">df2 = pd.DataFrame(list2, columns=[<span class="string">'Name'</span>, <span class="string">'Height'</span>, <span class="string">'Age'</span>], index = [<span class="string">'a'</span>, <span class="string">'b'</span>])</span><br><span class="line"><span class="comment">#通过dic生成</span></span><br><span class="line">dic = &#123;<span class="string">'Name'</span>: [<span class="string">'Alan'</span>, <span class="string">'John'</span>], <span class="string">'Height'</span>: [<span class="number">170</span>, <span class="number">180</span>], <span class="string">'Age'</span>: [<span class="number">20</span>, <span class="number">22</span>]&#125;</span><br><span class="line">df3 = pd.DataFrame(dic, index=[<span class="number">1</span>, <span class="number">2</span>])</span><br><span class="line"><span class="comment">#设置行名</span></span><br><span class="line">df2.index = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="comment">#设置列名</span></span><br><span class="line">df2.columns = [<span class="string">'name'</span>, <span class="string">'height'</span>, <span class="string">'age'</span>]</span><br></pre></td></tr></table></figure>
@@ -440,20 +440,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

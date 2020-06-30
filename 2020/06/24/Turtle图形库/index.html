@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Turtle 图形库READMETurtle是python的绘图库，依赖于tkinter实现基本的图形界面。该模块采用面向对象和面向过程两种形式的基本组件，可以轻松绘制精美的形状和图案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Turtle图形库">
+<meta property="og:url" content="http://yoursite.com/2020/06/24/Turtle%E5%9B%BE%E5%BD%A2%E5%BA%93/index.html">
+<meta property="og:site_name" content="杨佳伟的博客">
+<meta property="og:description" content="Turtle 图形库READMETurtle是python的绘图库，依赖于tkinter实现基本的图形界面。该模块采用面向对象和面向过程两种形式的基本组件，可以轻松绘制精美的形状和图案。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-24T12:55:14.000Z">
+<meta property="article:modified_time" content="2020-06-24T13:14:26.846Z">
+<meta property="article:author" content="杨佳伟">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="常用库">
+<meta property="article:tag" content="图形">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/06/24/Turtle%E5%9B%BE%E5%BD%A2%E5%BA%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Turtle图形库 | 杨佳伟的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杨佳伟的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">In search of fun</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">27</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+  
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/24/Turtle%E5%9B%BE%E5%BD%A2%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
+      <meta itemprop="name" content="杨佳伟">
+      <meta itemprop="description" content="In search of fun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨佳伟的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Turtle图形库
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-24 20:55:14 / 修改时间：21:14:26" itemprop="dateCreated datePublished" datetime="2020-06-24T20:55:14+08:00">2020-06-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/python%E5%B8%B8%E7%94%A8%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">python常用库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/python%E5%B8%B8%E7%94%A8%E5%BA%93/%E5%9B%BE%E5%BD%A2%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">图形化</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Turtle-图形库"><a href="#Turtle-图形库" class="headerlink" title="Turtle 图形库"></a>Turtle 图形库</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>Turtle是python的绘图库，依赖于tkinter实现基本的图形界面。该模块采用面向对象和面向过程两种形式的基本组件，可以轻松绘制精美的形状和图案。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="依赖关系"><a href="#依赖关系" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>由于它使用 <a href="https://docs.python.org/zh-cn/3/library/tkinter.html#module-tkinter" target="_blank" rel="noopener"><code>tkinter</code></a> 实现基本图形界面，因此需要安装了 Tk 支持的 Python 版本。</p>
+<h3 id="两种基本组件"><a href="#两种基本组件" class="headerlink" title="两种基本组件"></a>两种基本组件</h3><h4 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h4><p>该组件主要使用“2+2”个类</p>
+<ol>
+<li>TurtleScreen类</li>
+<li>RawTurtle类（别名RawPen）</li>
+</ol>
+<p>TurtleScreen类定义<strong>图形窗口</strong>作为绘图海龟的<em>运动场</em>。其构造器需要一个tkinter.Canvas或者ScrolledCanvas作为参数。</p>
+<p>TurtleScreen存在一个自类Screen，可以由Screen()函数返回，气味单例对象，所属的类不可被继承。</p>
+<p>RawTurtle类定义<strong>海龟对象</strong>在TurtleScreen上绘图。其构造器许哟啊一个tkinter.Canvas或者ScrolledCanvas或TurtleScreen作为参数，以指定海龟的<em>运动场</em>。</p>
+<h4 id="面向过程"><a href="#面向过程" class="headerlink" title="面向过程"></a>面向过程</h4><p>以上类型对象的方法存在对应的作为面向过程的接口函数，当屏幕上需要多个海龟的时候，就必须使用面向对象的接口。</p>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><h4 id="RawTurtle-Turtle-方法"><a href="#RawTurtle-Turtle-方法" class="headerlink" title="RawTurtle/Turtle 方法"></a>RawTurtle/Turtle 方法</h4><ul>
+<li><p>海龟动作</p>
+<p>移动和绘制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.forward" target="_blank" rel="noopener"><code>forward()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.fd" target="_blank" rel="noopener"><code>fd()</code></a> 前进<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.backward" target="_blank" rel="noopener"><code>backward()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bk" target="_blank" rel="noopener"><code>bk()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.back" target="_blank" rel="noopener"><code>back()</code></a> 后退<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.right" target="_blank" rel="noopener"><code>right()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.rt" target="_blank" rel="noopener"><code>rt()</code></a> 右转<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.left" target="_blank" rel="noopener"><code>left()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.lt" target="_blank" rel="noopener"><code>lt()</code></a> 左转<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.goto" target="_blank" rel="noopener"><code>goto()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setpos" target="_blank" rel="noopener"><code>setpos()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setposition" target="_blank" rel="noopener"><code>setposition()</code></a> 前往/定位<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setx" target="_blank" rel="noopener"><code>setx()</code></a> 设置x坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.sety" target="_blank" rel="noopener"><code>sety()</code></a> 设置y坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setheading" target="_blank" rel="noopener"><code>setheading()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.seth" target="_blank" rel="noopener"><code>seth()</code></a> 设置朝向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.home" target="_blank" rel="noopener"><code>home()</code></a> 返回原点<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.circle" target="_blank" rel="noopener"><code>circle()</code></a> 画圆<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.dot" target="_blank" rel="noopener"><code>dot()</code></a> 画点<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.stamp" target="_blank" rel="noopener"><code>stamp()</code></a> 印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearstamp" target="_blank" rel="noopener"><code>clearstamp()</code></a> 清除印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearstamps" target="_blank" rel="noopener"><code>clearstamps()</code></a> 清除多个印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.undo" target="_blank" rel="noopener"><code>undo()</code></a> 撤消<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.speed" target="_blank" rel="noopener"><code>speed()</code></a> 速度获取海龟的状态<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.position" target="_blank" rel="noopener"><code>position()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pos" target="_blank" rel="noopener"><code>pos()</code></a> 位置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.towards" target="_blank" rel="noopener"><code>towards()</code></a> 目标方向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.xcor" target="_blank" rel="noopener"><code>xcor()</code></a> x坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ycor" target="_blank" rel="noopener"><code>ycor()</code></a> y坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.heading" target="_blank" rel="noopener"><code>heading()</code></a> 朝向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.distance" target="_blank" rel="noopener"><code>distance()</code></a> 距离设置与度量单位<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.degrees" target="_blank" rel="noopener"><code>degrees()</code></a> 角度<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.radians" target="_blank" rel="noopener"><code>radians()</code></a> 弧度</p>
+</li>
+<li><p>画笔控制</p>
+<p>绘图状态<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pendown" target="_blank" rel="noopener"><code>pendown()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pd" target="_blank" rel="noopener"><code>pd()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.down" target="_blank" rel="noopener"><code>down()</code></a> 画笔落下<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.penup" target="_blank" rel="noopener"><code>penup()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pu" target="_blank" rel="noopener"><code>pu()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.up" target="_blank" rel="noopener"><code>up()</code></a> 画笔抬起<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pensize" target="_blank" rel="noopener"><code>pensize()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.width" target="_blank" rel="noopener"><code>width()</code></a> 画笔粗细<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pen" target="_blank" rel="noopener"><code>pen()</code></a> 画笔<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.isdown" target="_blank" rel="noopener"><code>isdown()</code></a> 画笔是否落下颜色控制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.color" target="_blank" rel="noopener"><code>color()</code></a> 颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pencolor" target="_blank" rel="noopener"><code>pencolor()</code></a> 画笔颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.fillcolor" target="_blank" rel="noopener"><code>fillcolor()</code></a> 填充颜色填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.filling" target="_blank" rel="noopener"><code>filling()</code></a> 是否填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.begin_fill" target="_blank" rel="noopener"><code>begin_fill()</code></a> 开始填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.end_fill" target="_blank" rel="noopener"><code>end_fill()</code></a> 结束填充更多绘图控制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.reset" target="_blank" rel="noopener"><code>reset()</code></a> 重置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clear" target="_blank" rel="noopener"><code>clear()</code></a> 清空<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.write" target="_blank" rel="noopener"><code>write()</code></a> 书写</p>
+</li>
+<li><p>海龟状态</p>
+<p>可见性<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.showturtle" target="_blank" rel="noopener"><code>showturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.st" target="_blank" rel="noopener"><code>st()</code></a> 显示海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.hideturtle" target="_blank" rel="noopener"><code>hideturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ht" target="_blank" rel="noopener"><code>ht()</code></a> 隐藏海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.isvisible" target="_blank" rel="noopener"><code>isvisible()</code></a> 是否可见外观<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shape" target="_blank" rel="noopener"><code>shape()</code></a> 形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.resizemode" target="_blank" rel="noopener"><code>resizemode()</code></a> 大小调整模式<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shapesize" target="_blank" rel="noopener"><code>shapesize()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.turtlesize" target="_blank" rel="noopener"><code>turtlesize()</code></a> 形状大小<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shearfactor" target="_blank" rel="noopener"><code>shearfactor()</code></a> 剪切因子<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.settiltangle" target="_blank" rel="noopener"><code>settiltangle()</code></a> 设置倾角<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tiltangle" target="_blank" rel="noopener"><code>tiltangle()</code></a> 倾角<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tilt" target="_blank" rel="noopener"><code>tilt()</code></a> 倾斜<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shapetransform" target="_blank" rel="noopener"><code>shapetransform()</code></a> 变形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.get_shapepoly" target="_blank" rel="noopener"><code>get_shapepoly()</code></a> 获取形状多边形</p>
+</li>
+<li><p>使用事件</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onclick" target="_blank" rel="noopener"><code>onclick()</code></a> 当鼠标点击<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onrelease" target="_blank" rel="noopener"><code>onrelease()</code></a> 当鼠标释放<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ondrag" target="_blank" rel="noopener"><code>ondrag()</code></a> 当鼠标拖动</p>
+</li>
+<li><p>Turtle专有方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.begin_poly" target="_blank" rel="noopener"><code>begin_poly()</code></a> 开始记录多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.end_poly" target="_blank" rel="noopener"><code>end_poly()</code></a> 结束记录多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.get_poly" target="_blank" rel="noopener"><code>get_poly()</code></a> 获取多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clone" target="_blank" rel="noopener"><code>clone()</code></a> 克隆<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getturtle" target="_blank" rel="noopener"><code>getturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getpen" target="_blank" rel="noopener"><code>getpen()</code></a> 获取海龟画笔<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getscreen" target="_blank" rel="noopener"><code>getscreen()</code></a> 获取屏幕<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setundobuffer" target="_blank" rel="noopener"><code>setundobuffer()</code></a> 设置撤消缓冲区<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.undobufferentries" target="_blank" rel="noopener"><code>undobufferentries()</code></a> 撤消缓冲区条目数</p>
+</li>
+</ul>
+<h4 id="TurtleScreen-Screen-方法"><a href="#TurtleScreen-Screen-方法" class="headerlink" title="TurtleScreen/Screen 方法"></a>TurtleScreen/Screen 方法</h4><ul>
+<li><p>窗口控制</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bgcolor" target="_blank" rel="noopener"><code>bgcolor()</code></a> 背景颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bgpic" target="_blank" rel="noopener"><code>bgpic()</code></a> 背景图片<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clear" target="_blank" rel="noopener"><code>clear()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearscreen" target="_blank" rel="noopener"><code>clearscreen()</code></a> 清屏<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.reset" target="_blank" rel="noopener"><code>reset()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.resetscreen" target="_blank" rel="noopener"><code>resetscreen()</code></a> 重置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.screensize" target="_blank" rel="noopener"><code>screensize()</code></a> 屏幕大小<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setworldcoordinates" target="_blank" rel="noopener"><code>setworldcoordinates()</code></a> 设置世界坐标系</p>
+</li>
+<li><p>动画控制</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.delay" target="_blank" rel="noopener"><code>delay()</code></a> 延迟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tracer" target="_blank" rel="noopener"><code>tracer()</code></a> 追踪<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.update" target="_blank" rel="noopener"><code>update()</code></a> 更新</p>
+</li>
+<li><p>使用屏幕事件</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.listen" target="_blank" rel="noopener"><code>listen()</code></a> 监听<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkey" target="_blank" rel="noopener"><code>onkey()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkeyrelease" target="_blank" rel="noopener"><code>onkeyrelease()</code></a> 当键盘按下并释放<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkeypress" target="_blank" rel="noopener"><code>onkeypress()</code></a> 当键盘按下<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onclick" target="_blank" rel="noopener"><code>onclick()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onscreenclick" target="_blank" rel="noopener"><code>onscreenclick()</code></a> 当点击屏幕<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ontimer" target="_blank" rel="noopener"><code>ontimer()</code></a> 当达到定时<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.mainloop" target="_blank" rel="noopener"><code>mainloop()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.done" target="_blank" rel="noopener"><code>done()</code></a> 主循环</p>
+</li>
+<li><p>设置与特殊方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.mode" target="_blank" rel="noopener"><code>mode()</code></a><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.colormode" target="_blank" rel="noopener"><code>colormode()</code></a> 颜色模式<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getcanvas" target="_blank" rel="noopener"><code>getcanvas()</code></a> 获取画布<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getshapes" target="_blank" rel="noopener"><code>getshapes()</code></a> 获取形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.register_shape" target="_blank" rel="noopener"><code>register_shape()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.addshape" target="_blank" rel="noopener"><code>addshape()</code></a> 添加形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.turtles" target="_blank" rel="noopener"><code>turtles()</code></a> 所有海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.window_height" target="_blank" rel="noopener"><code>window_height()</code></a> 窗口高度<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.window_width" target="_blank" rel="noopener"><code>window_width()</code></a> 窗口宽度</p>
+</li>
+<li><p>输入方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.textinput" target="_blank" rel="noopener"><code>textinput()</code></a> 文本输入<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.numinput" target="_blank" rel="noopener"><code>numinput()</code></a> 数字输入</p>
+</li>
+<li><p>Screen 专有方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bye" target="_blank" rel="noopener"><code>bye()</code></a> 退出<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.exitonclick" target="_blank" rel="noopener"><code>exitonclick()</code></a> 当点击时退出<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setup" target="_blank" rel="noopener"><code>setup()</code></a> 设置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.title" target="_blank" rel="noopener"><code>title()</code></a> 标题</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>杨佳伟
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2020/06/24/Turtle%E5%9B%BE%E5%BD%A2%E5%BA%93/" title="Turtle图形库">http://yoursite.com/2020/06/24/Turtle图形库/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E5%B8%B8%E7%94%A8%E5%BA%93/" rel="tag"><i class="fa fa-tag"></i> 常用库</a>
+              <a href="/tags/%E5%9B%BE%E5%BD%A2/" rel="tag"><i class="fa fa-tag"></i> 图形</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/20/pyinstaller%E6%89%93%E5%8C%85py%E7%A8%8B%E5%BA%8F/" rel="prev" title="pyinstaller打包py程序">
+      <i class="fa fa-chevron-left"></i> pyinstaller打包py程序
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/30/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/" rel="next" title="面向对象编程">
+      面向对象编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC80ODMzNS8yNDgyOQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Turtle-图形库"><span class="nav-text">Turtle 图形库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#README"><span class="nav-text">README</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖关系"><span class="nav-text">依赖关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两种基本组件"><span class="nav-text">两种基本组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#面向对象"><span class="nav-text">面向对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#面向过程"><span class="nav-text">面向过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法"><span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RawTurtle-Turtle-方法"><span class="nav-text">RawTurtle&#x2F;Turtle 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TurtleScreen-Screen-方法"><span class="nav-text">TurtleScreen&#x2F;Screen 方法</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="杨佳伟"
+      src="https://i.loli.net/2020/02/29/PJ7cZprfV964DjY.jpg">
+  <p class="site-author-name" itemprop="name">杨佳伟</p>
+  <div class="site-description" itemprop="description">In search of fun</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/2101831558" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;2101831558" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:y2101831558@gmail.com" title="E-Mail → mailto:y2101831558@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/yourname" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">杨佳伟</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
