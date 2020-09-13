@@ -1,0 +1,1316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Cross-Validation</title>
+    <url>/2020/02/02/Cross-Validation/</url>
+    <content><![CDATA[<h1 id="Cross-Validation"><a href="#Cross-Validation" class="headerlink" title="Cross-Validation"></a>Cross-Validation</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了关于模型评估的一种方法，<strong>划分数据集</strong>，将数据集划分为<strong>training data</strong>和<strong>validating data</strong>。然而，使用这种方法必须把数据集完全割裂开来，不能实现对数据集的最大利用（尤其是在数据集不够大的时候），因此本文将介绍模型评估的<strong>交叉验证法(Cross-Validation)</strong>，这种方法相较于对数据集的简单划分更能充分利用数据集。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="交叉验证法"><a href="#交叉验证法" class="headerlink" title="交叉验证法"></a>交叉验证法</h3><p><strong>交叉验证法</strong>是<strong>划分数据集</strong>的改进，将数据集分化为五份，将其中每一份都按如下操作：该份作为<strong>测试数据</strong>，其余作为<strong>训练数据</strong>，建立模型并用<strong>MAE</strong>评估，得到五个<strong>MAE</strong>值，取其平均作为模型的评估值。</p>
+<p><strong>说明</strong>：本方法评估的不是具体的某一个建立的模型，而是建立模型时使用的<strong>features</strong>，<strong>模型的种类</strong>，<strong>选择的参数</strong>，以帮助我们做出选择。</p>
+<h3 id="对比划分数据集"><a href="#对比划分数据集" class="headerlink" title="对比划分数据集"></a>对比<em>划分数据集</em></h3><p>可以看出，<strong>交叉验证法</strong>所需要的运算量为5倍，因此在数据集特别大，或者模型非常复杂，需要的运算量特大的时候，消耗的时间很长，而且在数据集很大的情况下，<strong>划分数据集</strong>即可得到足够准确的评估。因此在前述情况下，采用<strong>划分数据集</strong>的方法，在数据集较小的情况下使用本方法。</p>
+<h3 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.pipeline <span class="keyword">import</span> Pipeline</span><br><span class="line"><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"></span><br><span class="line"><span class="comment">#用pipeline构造模型</span></span><br><span class="line">my_pipeline = Pipeline(steps=[(<span class="string">'preprocessor'</span>,SimpleImputer()),(<span class="string">'model'</span>,RandomForestRegressor(n_estimators=<span class="number">50</span>,random_state=<span class="number">0</span>))])</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line"></span><br><span class="line"><span class="comment">#用cross_val_score方法进行评估，X,y分别是features和prediction target</span></span><br><span class="line">scores = <span class="number">-1</span> * cross_val_score(my_pipeline, X, y, cv=<span class="number">5</span>, scoring=<span class="string">"neg_mean_absolute_error"</span>)</span><br><span class="line">print(<span class="string">"MAE scores:\n"</span>, scores)</span><br><span class="line">print(<span class="string">"Ave is:"</span>,score.mean())</span><br></pre></td></tr></table></figure>
+
+<h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><p><code>sklearn</code>库的cross_val_score方法可以直接计算给定模型，数据集，划分数量下的<code>MAE</code>值。</p>
+<p><code>Pipeline</code>方法产生<code>Pipeline</code>对象，集成了数据预处理，模型的选择和模型的评估以及模型的预测。</p>
+<p>至此，模型的交叉评估就完成了。j</p>
+<h3 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h3><h4 id="Pipeline是什么"><a href="#Pipeline是什么" class="headerlink" title="Pipeline是什么"></a>Pipeline是什么</h4><p><code>sklearn</code>库中的一个类，我们可以使用<code>Pipeline</code>对象一站式处理数据科学的几个环节，使得：</p>
+<ul>
+<li>代码更简洁</li>
+<li>更难出错</li>
+<li>Cross-Validation更方便</li>
+</ul>
+<h4 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h4><h5 id="STEP1-定义数据预处理的步骤"><a href="#STEP1-定义数据预处理的步骤" class="headerlink" title="STEP1 定义数据预处理的步骤"></a>STEP1 定义数据预处理的步骤</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.compose <span class="keyword">import</span> ColumnTransformer</span><br><span class="line"><span class="keyword">from</span> sklearn.pipeline <span class="keyword">import</span> Pipeline</span><br><span class="line"><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line"></span><br><span class="line"><span class="comment">#数值变量缺失值预处理</span></span><br><span class="line">numerical_transformer = SimpleImputer(strategy=<span class="string">'constant'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#分类变量的预处理</span></span><br><span class="line">categorical_transformer = Pipeline(steps=[</span><br><span class="line">    (<span class="string">'imputer'</span>, SimpleImputer(strategy=<span class="string">'most_frequent'</span>)),</span><br><span class="line">    (<span class="string">'onehot'</span>, OneHotEncoder(handle_unknown=<span class="string">'ignore'</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment">#绑定前述两者</span></span><br><span class="line">preprocessor = ColumnTransformer(</span><br><span class="line">	transformers=[</span><br><span class="line">        (<span class="string">'num'</span>,numerical_transformer, numerical_cols),</span><br><span class="line">        (<span class="string">'cat'</span>,categorical_transformer, categorical_cols)</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h5 id="Step2-创建模型"><a href="#Step2-创建模型" class="headerlink" title="Step2 创建模型"></a>Step2 创建模型</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">form sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line">model = RandomForestRegressor(n_estimators=<span class="number">100</span>, random_state=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="Step3-创建和评估Pipeline"><a href="#Step3-创建和评估Pipeline" class="headerlink" title="Step3 创建和评估Pipeline"></a>Step3 创建和评估Pipeline</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"></span><br><span class="line"><span class="comment">#绑定预处理和模型</span></span><br><span class="line">my_pipeline = Pipeline(steps=[</span><br><span class="line">    (<span class="string">'preprocessor'</span>, preprocessor),</span><br><span class="line">    (<span class="string">'model'</span>,model)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用训练集进行数据的训练</span></span><br><span class="line">my_pipeline.fit(X_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment">#进行评估</span></span><br><span class="line">predictions = my_pipeline.predict(X_valid)</span><br><span class="line">score = mean_absolute_errors(y_valid, predictions)</span><br><span class="line">print(<span class="string">'MAE:'</span>, score)</span><br></pre></td></tr></table></figure>
+
+<h5 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h5><p><code>Pipeline</code>时<code>Python</code>作为<strong>面向对象编程语言</strong>的重要特性，将整个过程封装为一个<code>Pineline</code><strong>对象</strong>，使得代码更简洁，编程层次更清晰。<code>Pipeline</code>就是封装了<code>transformer</code>（前n-1个）和<code>estimator</code>（最后一个），在构造<code>Pipeline</code>对象时，向构造器<code>Pipeline()</code>传递参数<code>steps</code>，该参数为<strong>元组(tuple)</strong>组成的<strong>列表(list)</strong>，每个<strong>元组</strong>有两个元素，其中第一个是<strong>对象名</strong>，第二个是<strong>对象</strong>。在调用<code>Pipeline</code>对象的<code>fit</code>方法时，逐个调用每个<code>transformer</code>和<code>estimator</code>的<code>fit()</code>方法，将前一个的输出作为后者的输入。在调用<code>Pipeline</code>对象的<code>predict()</code>方法的时候，直接将<strong>参数(arguments)</strong>传递并调用<code>estimator</code>的<code>predict()</code>方法。</p>
+<p>整个<code>Pipeline</code>就像一个管道，因此得名。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>模型评估</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Data leakage</title>
+    <url>/2020/02/04/Data-leakage/</url>
+    <content><![CDATA[<h1 id="Data-leakage"><a href="#Data-leakage" class="headerlink" title="Data leakage"></a>Data leakage</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了使用<strong>训练集</strong>作为<strong>测试集</strong>可能造成模型评估的不准确，即在评估时表现很好，在预测表现滑坡，于是采用了<strong>数据集划分</strong>和<strong>交叉验证</strong>的方法。本文介绍另一种情况，<strong>Data leakage</strong>，也可能导致前述现象。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="Data-leakage-1"><a href="#Data-leakage-1" class="headerlink" title="Data leakage"></a>Data leakage</h3><p>在这种情况下，<strong>训练集</strong>和<strong>测试集</strong>中包含预测是的数据集中没有的并与<strong>predicton target</strong>有强关联<strong>feature</strong>。例如：</p>
+<blockquote>
+<p>在一个人是否患有肺炎的时候，用以建立模型的<strong>数据集</strong>中包含<strong>是否服用肺炎药物</strong>的<strong>feature</strong>，在预测时，这个<strong>feature</strong>只能在得知了是否患有肺炎之后才能获得，在逻辑上属于<strong>果</strong>(时间上的后发生)。</p>
+</blockquote>
+<p>此时，我们会发现模型评估的表现异常高，而在实际预测时由于模型训练过程中将给予这个<strong>feature</strong>过高的权重，表现将截然相反。</p>
+<p>在这时，我们需要把这类<strong>feature</strong>从数据集中剔除。</p>
+<h3 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">potential_leaks = [<span class="string">'expenditure'</span>, <span class="string">'share'</span>, <span class="string">'majorcards'</span>]</span><br><span class="line">X2 = x.drop(potential_leaks, axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="More"><a href="#More" class="headerlink" title="More"></a>More</h3><p>在大多数情况下，评估效果过好的原因是把<strong>果</strong>作为<strong>feature</strong>而不是把<strong>因</strong>作为<strong>feature</strong>（因为明显的因果关系不至于使用大数据），这也引出数据科学中关于<strong>去因果，存关联</strong>的理念，在逻辑上，<strong>强关联的事件</strong>被看作<strong>因果</strong>……</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>模型评估</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Data set processing</title>
+    <url>/2020/01/26/Data-set-processing/</url>
+    <content><![CDATA[<h1 id="Data-set-processing"><a href="#Data-set-processing" class="headerlink" title="Data set processing"></a>Data set processing</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在应用数据之前，首先要收集数据，而在收集数据的过程中，可能会遇到很多意外情况，比如<strong>数据缺失</strong>(Missing values)。本文将介绍关于这些问题的处理方式，以更好地收集和使用数据。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="Missing-values"><a href="#Missing-values" class="headerlink" title="Missing values"></a>Missing values</h3><h4 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h4><ul>
+<li>在统计全国各地经济发展的调查中，某些地区的某项数据可能缺失</li>
+<li>在统计人均收入的过程中，可能有人不愿意透漏自己的收入</li>
+</ul>
+<p>而在大多数的机器学习库不能正确处理这个问题，在使用数据缺失的数据时会报错。所以我们在使用这些库之前要先处理数据，使得缺失的数据通过某种方式进行补偿。</p>
+<h4 id="Approaches"><a href="#Approaches" class="headerlink" title="Approaches"></a>Approaches</h4><ol>
+<li>放弃含有丢失数据的对象<ul>
+<li>在大多数情况下，数据不会出现大规模的丢失，这种情况下只要把丢失的数据放弃就可以了</li>
+<li>但是在某些情况下，放弃数据丢失的对象可能对数据集整体造成损伤（参考<em>幸存者偏差</em>），因此应该谨慎处理</li>
+</ul>
+</li>
+<li>填补缺失值<ul>
+<li>常见的方法是使用该feature的平均值来填补缺失值，但也可酌情估计进行填补</li>
+<li>这种方式可以得出更准确的模型</li>
+</ul>
+</li>
+</ol>
+<p>在大多数情况下，使用后者更有效。</p>
+<h4 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h4><h5 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"></span><br><span class="line"><span class="comment">#读取数据 pd.read_csv(), X_full是读取出来用作模型构建的数据, X_test_full读取出来用作测试的数据</span></span><br><span class="line">X_full = pd.resd_csv(<span class="string">'../input/train.csv'</span>, index_col=<span class="string">'Id'</span>)</span><br><span class="line">X_test_full = pd.read_csv(<span class="string">'../input/test.csv'</span>, indexx_col=<span class="string">'Id'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#把含有丢失数据的行删除 dropna()</span></span><br><span class="line">X_full.dropna(axis=<span class="number">0</span>, subset=[<span class="string">'SalePrice'</span>], inplace=<span class="literal">True</span>)</span><br><span class="line"><span class="comment">#把目标特征从数据中分离出来 drop(), X_full作为属性, y作为预测目标</span></span><br><span class="line">y = X_full.SalePrice</span><br><span class="line">X_full.drop([<span class="string">'SalePrice'</span>], axis=<span class="number">1</span>, inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将属性简化为X, X_test简化后用作测试</span></span><br><span class="line">X = X_full.select_dtypes(exclude=[<span class="string">'object'</span>])</span><br><span class="line">X_test = X_test_full.select_dtypes(exclude=[<span class="string">'object'</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment">#分割数据集 train_test_split(X, y, train_size, test_size, random_state)</span></span><br><span class="line">X_train, x_valid, y_train, y_valid = train_test_split(X, y, train_size=<span class="number">0.8</span>, test_size=<span class="number">0.2</span>, random_state=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="放弃含有丢失数据的对象"><a href="#放弃含有丢失数据的对象" class="headerlink" title="放弃含有丢失数据的对象"></a>放弃含有丢失数据的对象</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#选择含有缺失值的列</span></span><br><span class="line">cols_with_missing = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns <span class="keyword">if</span> X_train[col].isnull().any()]</span><br><span class="line"></span><br><span class="line"><span class="comment">#将含有</span></span><br><span class="line">reduced_X_train = X_train.drop(cols_with_missing, axis=<span class="number">1</span>)</span><br><span class="line">reduced_X_valid = X_valid.drop(cols_with_missing, axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="补入平均值"><a href="#补入平均值" class="headerlink" title="补入平均值"></a>补入平均值</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"></span><br><span class="line"><span class="comment">#将平均值填入X_train和X_valid中</span></span><br><span class="line">imp_mean = SimpleImputer()</span><br><span class="line">imputed_X_train = pd.DataFrame(imp_mean.fit_transform(X_train))</span><br><span class="line">imputed_X_valid = pd.DataFrame(imp_mean.transform(X_valid))</span><br><span class="line"></span><br><span class="line"><span class="comment">#补入平均值的时候会移除列名，以下补充列名</span></span><br><span class="line">imputed_X_train.columns = X_train.columns</span><br><span class="line">imputed_X_valid.columns = X_valid.columns</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><ul>
+<li>涉及pandas和sklearn库</li>
+<li>pandas库对DataFrame进行操作</li>
+<li>sklearn库进行数据的处理和模型的建立</li>
+<li>pandas和sklearn库能够cowork well</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>数据预处理</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Data set Processing(2)</title>
+    <url>/2020/01/31/Data-set-Processing-2/</url>
+    <content><![CDATA[<h1 id="Data-set-Processing-2-categorial-variable"><a href="#Data-set-Processing-2-categorial-variable" class="headerlink" title="Data set Processing(2)_categorial variable"></a>Data set Processing(2)_categorial variable</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了关于缺失值处理的方法，本文介绍<strong>分类变量(categorial variable)</strong>的处理方法。</p>
+<p><strong>分类变量</strong>例如性别，城市，程度（离散的）等，为离散量。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="分类变量的处理"><a href="#分类变量的处理" class="headerlink" title="分类变量的处理"></a>分类变量的处理</h3><h4 id="分类变量"><a href="#分类变量" class="headerlink" title="分类变量"></a>分类变量</h4><p><strong>分类变量</strong>是指一类取值再有限集中的变量，比如<em>性别</em>，取值只有<em>男</em>和<em>女</em>两个。<strong>分类变量</strong>一般是离散的，而非连续值。</p>
+<h4 id="数值化"><a href="#数值化" class="headerlink" title="数值化"></a>数值化</h4><p>参考随机变量的处理，我们可以采用<strong>数值化</strong>的方法，即集合中每个元素对应到一个整数，不同元素对应不同整数。</p>
+<p>例如：<em>多</em>对应<em>1</em>，<em>少</em>对应<em>0</em>。</p>
+<p>但是这样再处理<em>性别</em>时不再适用，因为整数存在<strong>序</strong>，而性别的<em>男</em>和<em>女</em>不存在<strong>序</strong>。再模型的建立过程中，由于采取了一系列算数运算，整数的<strong>序</strong>会影响模型的建立过程。</p>
+<h4 id="One-Hot法"><a href="#One-Hot法" class="headerlink" title="One-Hot法"></a>One-Hot法</h4><p>为应对每种取值能对应到整数并且要求地位相等的情况，我们改进了<strong>数值化</strong>的方法。我们新增一些<strong>变量</strong>来表示需要表示的<strong>分类变量</strong>。具体如下：</p>
+<p>用一个新增的<strong>变量</strong>来表示<strong>分类变量</strong>中的一个取值，对每一个<strong>对象</strong>，如果<strong>分类变量</strong>取该值，则该值对应的新增的<strong>变量</strong>取<em>1</em>，如果<strong>分类变量</strong>不取该值，则取<em>0</em>。</p>
+<p>这样就保证了地位的同等。</p>
+<h4 id="直接放弃分类变量"><a href="#直接放弃分类变量" class="headerlink" title="直接放弃分类变量"></a>直接放弃分类变量</h4><p>如果该变量对<strong>目标变量</strong>的预测没有影响，直接放弃即可。</p>
+<h3 id="获取数据集中的分类变量"><a href="#获取数据集中的分类变量" class="headerlink" title="获取数据集中的分类变量"></a>获取数据集中的分类变量</h3><h4 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"></span><br><span class="line">data_path = <span class="string">".\molben_house_price_data.csv"</span></span><br><span class="line">house_price_data = pd.read_csv(data_path)</span><br><span class="line">features = [<span class="string">"rooms"</span>, <span class="string">"age"</span>, <span class="string">"area"</span>, <span class="string">"price"</span>]</span><br><span class="line">X = house_price_data[features]</span><br><span class="line">y = house_price_data.price</span><br><span class="line">train_X, val_X, train_y, val_y = train_test_split(X, y)</span><br><span class="line"></span><br><span class="line"><span class="comment">#s是&lt;class pandas.core.series.Series&gt;，用来存储train_X中有文本值的变量的名称(索引)</span></span><br><span class="line">s = (train_X.dtype == <span class="string">'object'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#s[s]是将s中值为true的量选出来组成一个Series，s[s].index是这个Series的index,即索引,最后转化为list </span></span><br><span class="line">text_list = list(s[s].index)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将text_list打印出来</span></span><br><span class="line">print(text_list)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p><code>Series</code>和<code>DataFrame</code>类似，都是pandas库中核心的数据结构，类似于<code>dic</code>和<code>list</code>。</p>
+<p>详情见</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">help(pd.DataFrame)</span><br><span class="line">help(pd.Series)</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义一个衡量数据集的函数"><a href="#定义一个衡量数据集的函数" class="headerlink" title="定义一个衡量数据集的函数"></a>定义一个衡量数据集的函数</h3><h4 id="程序清单-1"><a href="#程序清单-1" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"></span><br><span class="line"><span class="comment">#定义一个衡量数据集的函数，采用MAE法衡量</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">score_dataset</span><span class="params">(X_train, X_valid, y_train, y_valid)</span>:</span></span><br><span class="line">	model = RandomForestRegressor(n_estimators=<span class="number">100</span>, random_state=<span class="number">0</span>)</span><br><span class="line">	model.fit(X_train, y_train)</span><br><span class="line">	preds = model.predict(X_valid)</span><br><span class="line">	<span class="keyword">return</span> mean_absolute_error(y_valid,preds)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h4><p><code>MAE</code>法之前已经用过。这里采用<code>RandomForest</code>而不是普通的<strong>决策树</strong>，原因在于普通的<strong>决策树</strong>的质量还有其他因素影响，直接采用<code>RandomForest</code>可以不必调整这些因素使之相同。</p>
+<h3 id="数值化-1"><a href="#数值化-1" class="headerlink" title="数值化"></a>数值化</h3><h4 id="程序清单-2"><a href="#程序清单-2" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line"></span><br><span class="line"><span class="comment">#备份原始数据以免原始数据更改</span></span><br><span class="line">label_X_train = X_train.copy()</span><br><span class="line">label_X_valid = X_valid.copy()</span><br><span class="line"></span><br><span class="line"><span class="comment">#把数据进行数值化处理</span></span><br><span class="line">label_encoder = LabelEncoder()</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> text_list:</span><br><span class="line">    label_X_train[col] = label_encoder.fit_transform(X_train[col])</span><br><span class="line">    label_X_valid[col] = label_encoder.transform(X_valid[col])</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-2"><a href="#说明-2" class="headerlink" title="说明"></a>说明</h4><p><code>sklearn</code>库中的<code>LabelEncoder</code>类能够进行数据的<strong>数值化</strong>，直接对<code>DataFrame</code>类的对象进行操作。</p>
+<p><code>LabelEncoder</code>对象的<code>transform</code>方法能够将输入的<code>DataFrame</code>列转化为<strong>数值化的</strong><code>DataFrame</code>列进而赋值给label_encoder。而<code>fit_transform</code>则是设置label_encoder，使前后一致。</p>
+<h3 id="One-Hot法-1"><a href="#One-Hot法-1" class="headerlink" title="One-Hot法"></a>One-Hot法</h3><h4 id="程序清单-3"><a href="#程序清单-3" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line"></span><br><span class="line"><span class="comment">#将训练数据和测试数据One-Hot处理</span></span><br><span class="line">OH_encoder = OneHotEncoder(Handle_unknown=<span class="string">'ignore'</span>, sparse=<span class="literal">False</span>)</span><br><span class="line">OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[text_list]))</span><br><span class="line">OH_cols_valid = pd.DataFrame(OH_encoder.transform(X_valid[text_list]))</span><br><span class="line"></span><br><span class="line"><span class="comment">#函数fit_transform会将column index丢失，需要手动补回</span></span><br><span class="line">OH_cols_train.index = X_train.index</span><br><span class="line">OH_cols_valid.index = X_valid.index</span><br><span class="line"></span><br><span class="line"><span class="comment">#将得到的DataFrame对象替换原来的几列</span></span><br><span class="line">num_X_train = X_train.drop(object_cols, axis=<span class="number">1</span>)</span><br><span class="line">num_X_valid = X_valid.drop(object_cols, axis=<span class="number">1</span>)</span><br><span class="line">OH_X_train = pd.concat([num_X_train,OH_cols_train],axis=<span class="number">1</span>)</span><br><span class="line">OH_X_valid = pd.concat([num_X_valid,OH_cols_train],axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="说明-3"><a href="#说明-3" class="headerlink" title="说明"></a>说明</h4><p><code>sklearn</code>库中的<code>LabelEncoder</code>类能够使用<strong>One-Hot法</strong>对数据进行转换。</p>
+<p><code>transform</code>方法的返回对象是<code>Series</code>对象，需要进行手动转换和一些处理。</p>
+<p>处理过程可如清单所示，也可按照之前的循环逐个处理（没有必要）。</p>
+<h3 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">MAE_OH=score_dataset(OH_X_train, OH_X_valid, y_train, y_valid)</span><br><span class="line">MAE_VL=score_dataset(label_X_train, label_X_valid, y_train, y_valid)</span><br><span class="line">print(MAE_OH,<span class="string">"and"</span>,MAE_VL)</span><br></pre></td></tr></table></figure>
+
+<p>至此，所有工作结束。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>数据预处理</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Decision Tree</title>
+    <url>/2020/02/08/Decision-Tree/</url>
+    <content><![CDATA[<h1 id="Decision-Tree"><a href="#Decision-Tree" class="headerlink" title="Decision Tree"></a>Decision Tree</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>本文介绍一种机器学习算法，<strong>决策树</strong>。<strong>决策树</strong>是一种<strong>监督学习(supervised learning)</strong>算法，通过被<strong>标记(label)</strong>的<strong>样本集(sample set)</strong>构建树状结构，最终将<strong>样本</strong>分类，并通过分类的结果对<strong>样本</strong>的<strong>目标属性</strong>进行预测。</p>
+<p>本文简述该算法的基本思路和实现时需要的数学推导，并给出代码，详细论证参考<strong>统计机器学习</strong>。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="模型的建立"><a href="#模型的建立" class="headerlink" title="模型的建立"></a>模型的建立</h3><p><strong>决策树</strong>模型程树状，节点分为<strong>分支节点</strong>和<strong>叶节点</strong>，每个<strong>样本</strong>沿着根节点逐步分类一直分类到叶节点，最后通过叶节点来完成分类，如<em>图1</em>所示：</p>
+<img src="https://i.loli.net/2020/02/08/2yTXoiucM6evzkt.jpg" alt="图一" style="zoom:75%;" />
+
+<center>图1</center>
+要完成一棵树的构建，首先要确定 **样本** 分类的方法，即树结构的构建，还要决定分类后出于某一类的 **样本** 的标签，比如西瓜的好坏。每一个 **分支节点** 的分类都是由某个 **属性(feature)** 决定的，每个 **属性值(attribute value)** 分为一类，即一个 **子节点**。 **叶节点**的标签由本节点或父节点中（如果本节点没有 **样本**的话）最多数的 **标签**决定。可用如*图2*的流程图表示：
+
+<img src="https://i.loli.net/2020/02/08/D93yFKLmEJvw8TC.png" alt="决策树流程图.png" style="zoom: 80%;" />
+
+<center>图2</center>
+关键问题在于选择什么 **属性**作为每一个 **分支节点**分类的标准。
+
+<h3 id="属性的选择"><a href="#属性的选择" class="headerlink" title="属性的选择"></a>属性的选择</h3><h4 id="信息熵"><a href="#信息熵" class="headerlink" title="信息熵"></a>信息熵</h4><p> <strong>信息熵</strong>是用来衡量某个 <strong>样本集合</strong>的 <strong>纯度</strong>的量化指标，计算方法如下：</p>
+<p>假定当前 <strong>样本集合</strong> $D$ 中第 $k$ 类（按标记分类）样本所占的比例为 $p_k$ ($k=1,2,…,|V|$)，那么，$D$ 的信息熵表示为：<br>$$<br>Ent(D)=-\displaystyle\sum_{k=1}^{|V|}p_k\log_2{p_k}.\tag{1}\label{eq:two}<br>$$</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Machine Learning</title>
+    <url>/2020/01/20/Machine-Learning/</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>In this article, we will get to know what <strong>machine learning</strong> is, what it can be used for and get a little deeper on how it basically works.</p>
+<p>Let get started!</p>
+<a id="more"></a>
+
+<h2 id="In-a-word"><a href="#In-a-word" class="headerlink" title="In a word"></a>In a word</h2><p>Machine learning is to try to use the available data(<strong>training data</strong>) to form(<strong>fit</strong>) a <strong>model</strong> ,and the use the model to predict the future situation(<strong>test data</strong>) .</p>
+<h2 id="Important-conceptions"><a href="#Important-conceptions" class="headerlink" title="Important conceptions"></a>Important conceptions</h2><h3 id="model"><a href="#model" class="headerlink" title="model"></a>model</h3><blockquote>
+<p>It’s used to classify something into catagories</p>
+</blockquote>
+<ul>
+<li>Just like a function ,whose input is the chosen featurn of a certain thing (abstracted by human or automatic programs) ,it’s output being the catagory it should belong to according to the model .</li>
+</ul>
+<h3 id="training-data"><a href="#training-data" class="headerlink" title="training data"></a>training data</h3><blockquote>
+<p>It’s a set of <strong>correct</strong> classied feature-catagory pairs</p>
+</blockquote>
+<ul>
+<li>These data is classified by a person (maybe a lot of persons) and it’s used to <strong>fit</strong> the <strong>model</strong> which is to be used for predictions .</li>
+</ul>
+<h3 id="features"><a href="#features" class="headerlink" title="features"></a>features</h3><blockquote>
+<p>They’re something we abstract from the characteristcs of a certain kind of things to represent themselves </p>
+<p>For convenience ,They are usually transfered into numbers</p>
+</blockquote>
+<ul>
+<li>For example ,we can use area ,location ,age and so on to represent a house when we want to predict the price of the house.Mainly because the price is generally ralated to these factors.</li>
+</ul>
+<h3 id="improving"><a href="#improving" class="headerlink" title="improving"></a>improving</h3><ul>
+<li>obviousely ,the model formed is not <strong>universal</strong> enough for it may be  <strong>overfitting</strong> .</li>
+<li>I have to say that it’s kind of elusive ,but if you have ever drawed the regression splines ,you may find the similar situation .</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>总览</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Model Validation</title>
+    <url>/2020/01/23/Model-Validation/</url>
+    <content><![CDATA[<h1 id="Model-Validation"><a href="#Model-Validation" class="headerlink" title="Model Validation"></a>Model Validation</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了数据的处理，模型的选择建立，用模型进行了预估。</p>
+<p>本文将介绍如何对模型的预测效果进行科学的评价，以便进行模型的优化和选择。</p>
+<ul>
+<li>量化指标<ul>
+<li>MAE</li>
+</ul>
+</li>
+<li>防止过拟合<ul>
+<li>测试数据和训练数据分开</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="What-is-Model-Validation"><a href="#What-is-Model-Validation" class="headerlink" title="What is Model Validation"></a>What is Model Validation</h2><p>You’ll want to evaluate almost every model you ever build. In most (though not all) applications, the relevant measure of model quality is predictive accuracy. In other words, will the model’s predictions be close to what actually happens.</p>
+<p>Many people make a huge mistake when measuring predictive accuracy. They make predictions with their <em>training data</em> and compare those predictions to the target values in the <em>training data</em>. You’ll see the problem with this approach and how to solve it in a moment, but let’s think about how we’d do this first.</p>
+<p>You’d first need to summarize the model quality into an understandable way. If you compare predicted and actual home values for 10,000 houses, you’ll likely find mix of good and bad predictions. Looking through a list of 10,000 predicted and actual values would be pointless. We need to summarize this into a single metric.</p>
+<p>There are many metrics for summarizing model quality, but we’ll start with one called <strong>Mean Absolute Error</strong> (also called <strong>MAE</strong>). Let’s break down this metric starting with the last word, error.</p>
+<p>The prediction error for each house is:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">error=actual−predicted</span><br></pre></td></tr></table></figure>
+
+<p>So, if a house cost $150,000 and you predicted it would cost $100,000 the error is $50,000.</p>
+<p>With the MAE metric, we take the absolute value of each error. This converts each error to a positive number. We then take the average of those absolute errors. This is our measure of model quality. In plain English, it can be said as</p>
+<blockquote>
+<p>On average, our predictions are off by about X.</p>
+</blockquote>
+<p>To calculate MAE, we first need a model. That is built in a hidden cell below, which you can review by clicking the <code>code</code> button.</p>
+<p>Output</p>
+<p>Code</p>
+<p>Once we have a model, here is how we calculate the mean absolute error:</p>
+<p>In [2]:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"></span><br><span class="line">predicted_home_prices = melbourne_model.predict(X)</span><br><span class="line">mean_absolute_error(y, predicted_home_prices)</span><br></pre></td></tr></table></figure>
+
+<p>Out[2]:</p>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"><span class="number">434.71594577146544</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="The-Problem-with-“In-Sample”-Scores"><a href="#The-Problem-with-“In-Sample”-Scores" class="headerlink" title="The Problem with “In-Sample” Scores"></a>The Problem with “In-Sample” Scores</h2><p>The measure we just computed can be called an “in-sample” score. We used a single “sample” of houses for both building the model and evaluating it. Here’s why this is bad.</p>
+<p>Imagine that, in the large real estate market, door color is unrelated to home price.</p>
+<p>However, in the sample of data you used to build the model, all homes with green doors were very expensive. The model’s job is to find patterns that predict home prices, so it will see this pattern, and it will always predict high prices for homes with green doors.</p>
+<p>Since this pattern was derived from the training data, the model will appear accurate in the training data.</p>
+<p>But if this pattern doesn’t hold when the model sees new data, the model would be very inaccurate when used in practice.</p>
+<p>Since models’ practical value come from making predictions on new data, we measure performance on data that wasn’t used to build the model. The most straightforward way to do this is to exclude some data from the model-building process, and then use those to test the model’s accuracy on data it hasn’t seen before. This data is called <strong>validation data</strong>.</p>
+<h2 id="Coding-It"><a href="#Coding-It" class="headerlink" title="Coding It"></a>Coding It</h2><p>The scikit-learn library has a function <code>train_test_split</code> to break up the data into two pieces. We’ll use some of that data as training data to fit the model, and we’ll use the other data as validation data to calculate <code>mean_absolute_error</code>.</p>
+<p>Here is the code:</p>
+<p>In [3]:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"></span><br><span class="line"><span class="comment"># split data into training and validation data, for both features and target</span></span><br><span class="line"><span class="comment"># The split is based on a random number generator. Supplying a numeric value to</span></span><br><span class="line"><span class="comment"># the random_state argument guarantees we get the same split every time we</span></span><br><span class="line"><span class="comment"># run this script.</span></span><br><span class="line">train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = <span class="number">0</span>)</span><br><span class="line"><span class="comment"># Define model</span></span><br><span class="line">melbourne_model = DecisionTreeRegressor()</span><br><span class="line"><span class="comment"># Fit model</span></span><br><span class="line">melbourne_model.fit(train_X, train_y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># get predicted prices on validation data</span></span><br><span class="line">val_predictions = melbourne_model.predict(val_X)</span><br><span class="line">print(mean_absolute_error(val_y, val_predictions))</span><br></pre></td></tr></table></figure>
+
+<p>Out [3]:</p>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"><span class="number">259556.7211103938</span></span><br></pre></td></tr></table></figure>
+
+<p>至此，模型的评估也完成了！</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>模型评估</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Random Forest</title>
+    <url>/2020/01/24/Random-Forest/</url>
+    <content><![CDATA[<h1 id="Random-Forest"><a href="#Random-Forest" class="headerlink" title="Random Forest"></a>Random Forest</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>前文介绍了决策树，以及影响决策树模型的一些因素。本文介绍的随机森林则是决策树的升级版本，采用多颗决策树的方式来提高模型的准确性。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"></span><br><span class="line">model = RandomForestRegressor(n_estimators=<span class="number">100</span>, random_state=<span class="number">0</span>)</span><br><span class="line">model.fit(X_tarin, y_train)</span><br><span class="line">predicitons = model.predict(X_valid)</span><br><span class="line"><span class="keyword">return</span> mean_absolute_error(y_valid, preds)</span><br></pre></td></tr></table></figure>
+
+<h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><p>决策树需要调整参数改变一颗决策树的叶节点树来改进预测效果，而使用随机森林则没有这样的要求。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pandas</title>
+    <url>/2020/01/22/Pandas/</url>
+    <content><![CDATA[<h1 id="Pandas-学习笔记"><a href="#Pandas-学习笔记" class="headerlink" title="Pandas 学习笔记"></a>Pandas 学习笔记</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>介绍Pandas库的基本使用方法。Pandas库是数据科学中最常用的库之一，Pandas库提供了海量的操作，用Pandas可以方便高效地处理数据。Pandas 包含两种基本的数据结构Series和DataFrame，分别是有索引的一维和二维数据结构。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="导入pandas"><a href="#导入pandas" class="headerlink" title="导入pandas"></a>导入pandas</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br></pre></td></tr></table></figure>
+
+<h3 id="Series"><a href="#Series" class="headerlink" title="Series"></a>Series</h3><p>类似于dic，但是索引可以重复，而且具有顺序（dic无序）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">arr = np.array([<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, np.NaN, <span class="number">10</span>])</span><br><span class="line">series1 = pd.Series(arr, index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>]) <span class="comment"># 初始化的时候设置index索引</span></span><br></pre></td></tr></table></figure>
+
+<p>此时按列表的顺序创建了一个Series对象，默认的index为0, 1, 2…</p>
+<h4 id="设置索引"><a href="#设置索引" class="headerlink" title="设置索引"></a>设置索引</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">series1.index = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>设置索引的个数和Series元素的个数应该相同。</p>
+<h4 id="取值"><a href="#取值" class="headerlink" title="取值"></a>取值</h4><p>可以通过顺序索引和index取值</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 通过顺序索引取值</span></span><br><span class="line">series1[<span class="number">0</span>] <span class="comment">#返回第一个元素1</span></span><br><span class="line"><span class="comment"># 通过index取值</span></span><br><span class="line">series1[<span class="string">'a'</span>] <span class="comment">#返回index为'a'的元素</span></span><br></pre></td></tr></table></figure>
+
+<p>还可以通过切片来获取多值，可以通过顺序索引，也可通过index</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">series1[<span class="number">0</span>:<span class="number">1</span>] <span class="comment">#左闭右开</span></span><br><span class="line">series1[<span class="string">'a'</span>:<span class="string">"e"</span>] <span class="comment">#两边都是闭区间</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="缺失值处理"><a href="#缺失值处理" class="headerlink" title="缺失值处理"></a>缺失值处理</h4><p>Series对象可以设置一个含有元素的条件表达式，然后取出所有使得条件表达式值为真的元素，构建一个新的Series对象</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">series2 = series1[series1 &gt; <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+
+<p>其中series1 &gt; 3会返回一个索引和series1相同，而值为True或False的Sereis对象。</p>
+<p>而利用pd中的isnull函数可以取出非空值：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">series3 = series1[pd.isnull(series1)]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Series对象的加减运算"><a href="#Series对象的加减运算" class="headerlink" title="Series对象的加减运算"></a>Series对象的加减运算</h4><p>两个Series对象之间可以进行加减运算</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s1 = pd.Series([<span class="number">1</span>, <span class="number">2</span>, np.NaN], index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line">s2 = pd.Series([<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>], index=[<span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>])</span><br><span class="line">s3 = s1 + s2</span><br></pre></td></tr></table></figure>
+
+<p>此时，python自动按照s1,s2对其索引，两个都有的值为两个元素相加，有没有的赋值为NaN。s3 = [NaN, 6, NaN, NaN]</p>
+<h4 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h4><p>$[1]$<a href="https://blog.csdn.net/weixin_42107718/article/details/98649208?utm_source=app" target="_blank" rel="noopener">Series详解CSDN博客</a></p>
+<p>$[2]$ <a href="https://www.pypandas.cn/docs/reference.html" target="_blank" rel="noopener">Pandas参考文档中文版</a></p>
+<h3 id="索引对象"><a href="#索引对象" class="headerlink" title="索引对象"></a>索引对象</h3><p>DataFrame的行和列均有索引</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">print(type(df3.index))</span><br><span class="line"><span class="comment"># 返回&lt;class 'pandas.core.indexes.range.RangeIndex'&gt;</span></span><br><span class="line">print(type(df3.columns))</span><br><span class="line"><span class="comment"># 返回&lt;class 'pandas.core.indexes.base.Index'&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>索引对象负责管理轴标签(行和列)，和其他元数据，如轴名称。</p>
+<p>通过索引对象可以从DataFrame对象中获得某个索引值或者进行重新赋值</p>
+<h3 id="DataFrame"><a href="#DataFrame" class="headerlink" title="DataFrame"></a>DataFrame</h3><p>是一种类似表格的对象，依赖于Series对象，行和列均可以看作Series对象。以下列举了DataFrame的基本操作：</p>
+<h4 id="读取CSV"><a href="#读取CSV" class="headerlink" title="读取CSV"></a>读取CSV</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#csv文件地路径</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">path = os.path.dirname(__file__)</span><br><span class="line">file_path = os.path.jion(path, <span class="string">'filename.csv'</span>)</span><br><span class="line"><span class="comment">#从文件中读取数据并返回DataFrame对象</span></span><br><span class="line">df = pd.read_csv(file_path)</span><br><span class="line"><span class="comment">#将data以表格的形式打印</span></span><br><span class="line">df.describe()</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过list-dic生成"><a href="#通过list-dic生成" class="headerlink" title="通过list/dic生成"></a>通过list/dic生成</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#一维数组</span></span><br><span class="line">list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">df = pd.DataFrame(list, columns=[<span class="string">'cols'</span>], index=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line"><span class="comment">#高维数组</span></span><br><span class="line">list2 = [[<span class="string">'Alan'</span>, <span class="number">170</span>, <span class="number">20</span>], [<span class="string">"John"</span>, <span class="number">180</span>, <span class="number">22</span>]]</span><br><span class="line">df2 = pd.DataFrame(list2, columns=[<span class="string">'Name'</span>, <span class="string">'Height'</span>, <span class="string">'Age'</span>], index = [<span class="string">'a'</span>, <span class="string">'b'</span>])</span><br><span class="line"><span class="comment">#通过dic生成</span></span><br><span class="line">dic = &#123;<span class="string">'Name'</span>: [<span class="string">'Alan'</span>, <span class="string">'John'</span>], <span class="string">'Height'</span>: [<span class="number">170</span>, <span class="number">180</span>], <span class="string">'Age'</span>: [<span class="number">20</span>, <span class="number">22</span>]&#125;</span><br><span class="line">df3 = pd.DataFrame(dic, index=[<span class="number">1</span>, <span class="number">2</span>])</span><br><span class="line"><span class="comment">#设置行名</span></span><br><span class="line">df2.index = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="comment">#设置列名</span></span><br><span class="line">df2.columns = [<span class="string">'name'</span>, <span class="string">'height'</span>, <span class="string">'age'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>注意，在设置行和列名（索引）的时候，大小一定要和DataFrame的行列数相同，否则报错。</p>
+<h4 id="loc-ix-iloc"><a href="#loc-ix-iloc" class="headerlink" title="loc/ix/iloc"></a>loc/ix/iloc</h4><p>loc通过标签值索引，iloc通过标签顺序索引（数），并且支持切片索引。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">print(type(df3.loc[<span class="number">0</span>]))</span><br><span class="line">print(type(df3[<span class="string">'name'</span>]))</span><br><span class="line"><span class="comment">#均返回&lt;class 'pandas.core.series.Series'&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>取出某行后可以对某行进行等操作，如下</p>
+<h4 id="行操作"><a href="#行操作" class="headerlink" title="行操作"></a>行操作</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#生成行索引列表</span></span><br><span class="line">df2.index</span><br><span class="line"><span class="comment">#取出某行</span></span><br><span class="line">df2.loc[<span class="string">'a'</span>]</span><br><span class="line"><span class="comment">#添加行</span></span><br><span class="line">df2.loc[<span class="string">'c'</span>] = [<span class="string">'Bob'</span>, <span class="number">175</span>, <span class="number">18</span>]</span><br><span class="line"><span class="comment">#删除行</span></span><br><span class="line">df2.drop(<span class="string">'c'</span>)</span><br><span class="line"><span class="comment">#修改行</span></span><br><span class="line">df2.loc[<span class="string">'b'</span>] = [<span class="string">'AAlan'</span>, <span class="number">176</span>, <span class="number">20</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="列操作"><a href="#列操作" class="headerlink" title="列操作"></a>列操作</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 按列名取出某列</span></span><br><span class="line">df[<span class="string">'name'</span>]</span><br><span class="line"><span class="comment"># 增加列</span></span><br><span class="line">df[<span class="string">'salary'</span>] = [<span class="number">100</span>, <span class="number">200</span>]</span><br><span class="line"><span class="comment"># 删除列</span></span><br><span class="line">df.pop(<span class="string">'sex'</span>)</span><br><span class="line"><span class="comment"># 修改整列</span></span><br><span class="line">df[<span class="string">'age'</span>] = [<span class="string">'Amy'</span>, <span class="string">'John'</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="筛选"><a href="#筛选" class="headerlink" title="筛选"></a>筛选</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 实例</span></span><br><span class="line">df4 = df3[df3[<span class="string">"age"</span>] &gt; <span class="number">0</span>]</span><br><span class="line"><span class="comment"># 返回一个DF，包含df3中所有age属性&gt;0的行</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h4><h4 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h4><h4 id="统计函数"><a href="#统计函数" class="headerlink" title="统计函数"></a>统计函数</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用sum方法可以统计DF的列之和行之和</span></span><br><span class="line">df5 = df3.sum()</span><br><span class="line"><span class="comment"># 返回只有一行的列之和</span></span><br><span class="line">i = df3.loc[<span class="number">0</span>].sum()</span><br><span class="line"><span class="comment"># 返回df3的第0行之和</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p>$[1]$<a href="https://blog.csdn.net/u014281392/article/details/75331570" target="_blank" rel="noopener">DataFrame的基本操作</a></p>
+<h3 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#从data中用dot-notation选择代表房子面积，位置等的几列</span></span><br><span class="line">features = [<span class="string">'Area'</span>, <span class="string">'Position'</span>, <span class="string">'Rooms'</span>]</span><br><span class="line">X = data[features]</span><br></pre></td></tr></table></figure>
+
+<p>X代表data中的几列，是我们选择出来的features，也是我们预测Prediction Target的依据。</p>
+<p>选择不同的features往往会得出不同的预测效果，所以我们以后还要了解更好地选择features的方法。</p>
+<ul>
+<li>小贴士：<ul>
+<li>使用describe()和head()函数可以将X，y，和data可视化处理，以便观察并发现联系</li>
+</ul>
+</li>
+</ul>
+<h3 id="学习心得"><a href="#学习心得" class="headerlink" title="学习心得"></a>学习心得</h3><p>如何快速入门面向对象语言的框架</p>
+<ul>
+<li>了解框架的外延，调用和依赖的库</li>
+<li>在官方文档中浏览框架定义的类型种类(type函数)</li>
+<li>根据实际项目中需要的行为了解类型的属性和方法</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>总览</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Underfitting and Overfitting</title>
+    <url>/2020/01/23/Underfitting-and-Overfitting/</url>
+    <content><![CDATA[<h1 id="Overfitting"><a href="#Overfitting" class="headerlink" title="Overfitting"></a>Overfitting</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>上篇文章中介绍了我们不应该只使用训练数据来进行模型的评估的原因，本文中将介绍一种极端的情况，<strong>过拟合</strong>(Overfitting)，在这种情况下模型对训练数据的预测非常准确，而对之外数据预测则非常糟糕。而<strong>拟合不足</strong>(Underfitting)又会导致模型预测不够准确，所以本文将剖析这两种情况产生的原因并给出解决的方法。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="过拟合和拟合不足现象产生的原因"><a href="#过拟合和拟合不足现象产生的原因" class="headerlink" title="过拟合和拟合不足现象产生的原因"></a>过拟合和拟合不足现象产生的原因</h3><h4 id="决策树模型的原理"><a href="#决策树模型的原理" class="headerlink" title="决策树模型的原理"></a>决策树模型的原理</h4><p>根据不同的<strong>属性(features)</strong>将<strong>测试样本(testing data)</strong>不断分类，直到决策树的叶节点，再根据叶节点中的<strong>训练样本(training data)</strong>的<strong>预测目标(prediction target)</strong>来预测该<strong>测试样本</strong>的<strong>预测目标(prediction target)</strong>。</p>
+<blockquote>
+<p><strong>Overfitting:</strong> 给定一个假设空间H，一个假设h属于H，如果存在其他的假设h’属于H,使得在训练样例上h的错误率比h’小，但在整个实例分布上h’比h的错误率小，那么就说假设h过度拟合训练数据。</p>
+</blockquote>
+<h4 id="过拟合的原因"><a href="#过拟合的原因" class="headerlink" title="过拟合的原因"></a>过拟合的原因</h4><ul>
+<li><p><strong>建模抽样样本不随机</strong>，比如像预测全体人类的身高，结果样本选择都是男性。</p>
+</li>
+<li><p><strong>训练数据中的噪点过多</strong>，使得模型拟合了这些噪点从而对于正常的数据不能很好的预测。</p>
+</li>
+<li><p><strong>逻辑假设不成立</strong>，所有的建模都有一个逻辑假设，就是规律在前后基本不变，但是这个假设不一定成立，比如在冰河时期建立的的天气变化模型，肯定不能用来预测现在的天气。</p>
+</li>
+<li><p>如果<strong>决策树的深度和每次分的类太多</strong>，会造成叶节点中<strong>训练样本</strong>个数太少，导致根据其中<strong>训练样本</strong>的<strong>预测目标</strong>进行的预测不准确（统计原则上样本越多越准确）。如下图：</p>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2020/06/19/v8rwq9uSUTOInpb.jpg" alt="过拟合.jpg"></p>
+<h3 id="问题解决的办法"><a href="#问题解决的办法" class="headerlink" title="问题解决的办法"></a>问题解决的办法</h3><ul>
+<li><p>保证取样的科学性。</p>
+</li>
+<li><p>决策树中可以采取剪枝的方法，还可以使用随机森林。</p>
+</li>
+<li><p>找到U形曲线的最低点（不容易），我们暂且采用最直接的方法，代值法。代码如下：</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_mae</span><span class="params">(max_leaf_nodes,train_X,train_y,val_X,val_y)</span>:</span></span><br><span class="line">	model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes,random_state=<span class="number">0</span>)</span><br><span class="line">	model.fit(train_X,train_y)</span><br><span class="line">	preds_val = model.predict(val_X)</span><br><span class="line">	mae = mean_absolute_error(val_y,preds_val)</span><br><span class="line">	<span class="keyword">return</span> mae</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> max_leaf_nodes <span class="keyword">in</span> [<span class="number">5</span>,<span class="number">50</span>,<span class="number">500</span>,<span class="number">5000</span>]:</span><br><span class="line">	my_mae = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)</span><br><span class="line">	print(<span class="string">"Max leaf nodes: %d \t\t Mean Absolute Error: %d"</span> %(max_leaf_nodes, my_mae))</span><br></pre></td></tr></table></figure>
+
+<p>Out[1]:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">5</span>  		 	 <span class="attr">Mean Absolute Error:</span>  <span class="number">347380</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">50</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">258171</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">500</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">243495</span></span><br><span class="line"><span class="attr">Max leaf nodes:</span> <span class="number">5000</span>  		 <span class="attr">Mean Absolute Error:</span>  <span class="number">254983</span></span><br></pre></td></tr></table></figure>
+
+<p>最后选择最好的<code>max_leaf_nodes</code>构建模型就可以了。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>寒假任务</title>
+    <url>/2020/01/20/%E5%AF%92%E5%81%87%E4%BB%BB%E5%8A%A1/</url>
+    <content><![CDATA[<h1 id="寒假任务"><a href="#寒假任务" class="headerlink" title="寒假任务"></a>寒假任务</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>本期任务我们将实现一个通过机器学习处理问题的基本框架，大致包括：</p>
+<ul>
+<li>数据预处理：了解、运用一些基本的数据预处理方法；熟悉python库<code>numpy</code>、<code>pandas</code>、<code>matplotlib</code>的基本使用</li>
+<li>模型实现：理解、实现一些基础的机器学习算法</li>
+<li>模型评估与选择：了解、运用一些基本的模型评估方法</li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="具体任务："><a href="#具体任务：" class="headerlink" title="具体任务："></a>具体任务：</h3><ol>
+<li>了解并实现一些基本的数据预处理方法（包括但不限于：缺失值处理，异常值处理，归一化，one-hot编码）并根据你对它们的理解对数据集进行数据预处理</li>
+<li>理解基本的数据集划分方法，实现对数据集的划分（包括但不限于：留出法、交叉验证法、自助法）</li>
+<li>了解<code>KNN</code>、<code>Logistic Regression</code>算法的原理，在划分后的数据集上用<strong>自己实现的KNN和Logistic Regression算法</strong>进行分类</li>
+<li>理解基本的模型评估方法，了解各个评估方法的侧重点，实现对模型的评估（包括但不限于<code>acc</code>, <code>recall</code>, <code>precision</code>, <code>F1-score</code>）</li>
+</ol>
+<h3 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h3><ol>
+<li><a href="https://www.kaggle.com/c/titanic" target="_blank" rel="noopener">Titanic</a></li>
+</ol>
+<h3 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h3><ol>
+<li>比较各种数据划分方法的的效果</li>
+<li>使自己的代码的可拓展性尽可能强（可参照附加任务中第4、5、6条）</li>
+<li>不使用Scikit Learn等机器学习库，有需要的话自己手动实现</li>
+<li>尽量理解算法以后看着公式写代码，不要照搬网上或者《机器学习实战》中的代码！</li>
+<li>按上一期任务中的代码风格指南中的要求完成自己的代码，代码同步到Github</li>
+<li>勤用搜索工具，勤看官方文档，本期很多内容需要大家善用搜索工具！</li>
+</ol>
+<h3 id="附加任务"><a href="#附加任务" class="headerlink" title="附加任务"></a>附加任务</h3><ol>
+<li>进一步了解模型评估方法（包括但不限于：<code>macro-P</code> <code>macro-R</code> <code>macro-F1</code>, <code>micro-P</code> <code>micro-R</code> <code>micro-F1</code>, <code>ROC</code>&amp;<code>AUC</code>）</li>
+<li>对于不同数据集划分方法得到的混淆矩阵，计算你的模型的<code>macro-P</code> <code>macro-R</code> <code>macro-F1</code>和<code>micro-P</code> <code>micro-R</code> <code>micro-F1</code></li>
+<li>完成<code>ROC</code>曲线的绘制以及<code>AUC</code>的计算</li>
+<li>了解机器学习库<code>sklearn</code>中KNN模型的使用方法，尝试使你的模型的使用方法与其一致</li>
+<li>了解机器学习库<code>sklearn</code>中数据预处理库<code>preprocessing</code>中我们已经学过的数据预处理方法的使用方法，尝试使你的数据预处理方法的使用方法与其一致</li>
+<li>了解机器学习库<code>sklearn</code>中模型评估库<code>metrics</code>中我们已经学过的模型评估方法的使用方法，尝试使你的模型评估方法的使用方法与其一致</li>
+<li>（仍学有余力的话）提前了解<code>Decision Tree</code>算法（预剪枝及后剪枝）及 <code>SVM</code>算法</li>
+</ol>
+<h4 id="植-树-造-林"><a href="#植-树-造-林" class="headerlink" title="植 树 造 林"></a>植 树 造 林</h4><ul>
+<li><strong>手动实现</strong> <code>ID3, CART, C4.5</code>决策树</li>
+<li>实现上述决策树的预剪枝&amp;后剪枝</li>
+<li>使用<code>GraphViz</code>进行决策树的可视化</li>
+<li>选取上述三种决策树的任意一种，实现一个随机森林</li>
+<li>实现一个梯度提升树（选做）</li>
+</ul>
+<h5 id="相关说明"><a href="#相关说明" class="headerlink" title="相关说明"></a>相关说明</h5><ul>
+<li>建议参考资料：《机器学习》《统计学习方法》</li>
+<li>使用<a href="https://github.com/susanli2016/Machine-Learning-with-Python/blob/master/diabetes.csv" target="_blank" rel="noopener">这个数据集</a></li>
+<li>（重要）要求实现一个<strong>python类</strong><code>DecisionTree</code>，并将<code>ID3, CART, C4.5</code>作为其<strong>子类</strong></li>
+</ul>
+<h4 id="渐-入-佳-境"><a href="#渐-入-佳-境" class="headerlink" title="渐 入 佳 境"></a>渐 入 佳 境</h4><ul>
+<li>分别实现<code>k-means</code>和高斯混合聚类，并使用<code>matplotlib</code>可视化散点图</li>
+<li>提示：重点在于如何使用二维图像表示高维空间上的聚类</li>
+<li>实现<strong>结构固定（手动设计网络结构）</strong>的贝叶斯网并训练。</li>
+<li>（选做）实现贝叶斯网的结构学习</li>
+<li>上述任务的数据集均自选。</li>
+</ul>
+<h4 id="神-经-网-络"><a href="#神-经-网-络" class="headerlink" title="神 经 网 络"></a>神 经 网 络</h4><ul>
+<li>了解神经网络的通用模型、神经元、计算图等相关概念</li>
+<li>手动实现一个计算图，要求实现常用运算的反向传播</li>
+<li><strong>使用你的计算图</strong>，构建并训练一个<strong>全连接</strong>神经网络</li>
+<li>再次强调是使用计算图实现，禁止手动求导。</li>
+<li>训练你的神经网络，数据集使用<code>titanic</code>。</li>
+<li>有余力的话，学习图像处理的基本知识、卷积和池化的概念，并利用卷积写一个模糊滤镜和锐化滤镜</li>
+</ul>
+<h4 id="这周我们开始学习NLP！"><a href="#这周我们开始学习NLP！" class="headerlink" title="这周我们开始学习NLP！"></a>这周我们开始学习NLP！</h4><h5 id="基础要求："><a href="#基础要求：" class="headerlink" title="基础要求："></a>基础要求：</h5><ol>
+<li>不允许使用pytorch，tensorflow等深度学习库</li>
+<li>了解词向量的原理与流行词向量算法（推荐cs224n</li>
+<li>自行寻找一个大小适当的英文语料库，并进行数据清洗，用作数据集</li>
+<li>使用word2vec中的CBOW模型构建词向量</li>
+<li>使用训练好的词向量预测中间词，并尝试优化模型的准确率</li>
+<li>尝试词类比测试（例如：king - man + woman = queen）与相似词测试（给出意思最相近的几个词）</li>
+</ol>
+<h5 id="进阶要求："><a href="#进阶要求：" class="headerlink" title="进阶要求："></a>进阶要求：</h5><ol>
+<li>挑选部分词进行降维可视化（数字，同类词语等</li>
+<li>使用glove构建词向量</li>
+<li>了解RNN，LSTM，GRU的原理</li>
+</ol>
+<h4 id="学习pytorch并实现"><a href="#学习pytorch并实现" class="headerlink" title="学习pytorch并实现"></a>学习pytorch并实现</h4><h5 id="GO-DEEPER"><a href="#GO-DEEPER" class="headerlink" title="GO DEEPER"></a>GO DEEPER</h5><p>注意： 本次任务的<strong>全部工作</strong>要求在我们的服务器上完成。完成前请务必仔细阅读群文件里的《启明服务器使用规范》</p>
+<ul>
+<li>阅读<a href="https://arxiv.org/pdf/1608.06993" target="_blank" rel="noopener">这篇论文</a>，<strong>在理解模型原理的基础上</strong>，在cifar10数据集上实现它（层数可以不用太深，免得训练太慢，loss能收敛并看出效果即可）。</li>
+<li>在完成上一条的基础上，在你的densenet上实现<a href="https://arxiv.org/pdf/1502.03167" target="_blank" rel="noopener">这篇论文</a>，并比较实现前后，模型在各种指标上的差异。</li>
+<li>上述两个任务均要求使用tensorboard进行可视化。</li>
+<li>将你的模型<strong>部署</strong>成一个可以在终端使用的<strong>应用程序</strong>（而不是一个需要运行时解释的python脚本。如何部署？这里不限方法，可以自由发挥。）</li>
+<li>上述任务要求<strong>全部完成</strong></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>总览</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>scikit-learn</title>
+    <url>/2020/01/22/scikit-learn/</url>
+    <content><![CDATA[<h1 id="scikit-learn学习笔记"><a href="#scikit-learn学习笔记" class="headerlink" title="scikit-learn学习笔记"></a>scikit-learn学习笔记</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>scikit-learn库同样是数据分析中重要的库之一，调用时简称sklearn。</p>
+<p>使用sklearn库，可以根据DataFrame对象建立模型(Fitting model)，从而使用模型进行预测。</p>
+<p>模型的建立是数据科学中的关键，有条件应该自己了解背后的算法并实现其功能，本文仅介绍scikit的使用。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="建立和使用模型的关键"><a href="#建立和使用模型的关键" class="headerlink" title="建立和使用模型的关键"></a>建立和使用模型的关键</h3><ol>
+<li>使用哪种模型？决策树，还是其他的模型？</li>
+<li>建立预测模型</li>
+<li>使用模型进行预测</li>
+<li>评估预测的准确性</li>
+</ol>
+<h3 id="使用sklearn库建立模型"><a href="#使用sklearn库建立模型" class="headerlink" title="使用sklearn库建立模型"></a>使用sklearn库建立模型</h3><h4 id="导入模型"><a href="#导入模型" class="headerlink" title="导入模型"></a>导入模型</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br></pre></td></tr></table></figure>
+
+<h4 id="构造模型实例"><a href="#构造模型实例" class="headerlink" title="构造模型实例"></a>构造模型实例</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = DecisionTreeRegressor(random_state=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>random_state</code>许多机器学习模型在<strong>fitting</strong>时具有一定的<strong>随机性</strong>，因此在构造实例的时候指定<code>random_state</code>的值为1可以保证每次构建模型的时候都相同。但不同的<code>random_state</code>不会使模型的预测效果发生改变。</p>
+<h4 id="构建模型"><a href="#构建模型" class="headerlink" title="构建模型"></a>构建模型</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model.fit(X,y)</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用模型进行预测"><a href="#使用模型进行预测" class="headerlink" title="使用模型进行预测"></a>使用模型进行预测</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">print(<span class="string">"Making predictions for the following 5 houses:"</span>)</span><br><span class="line">print(X.head())</span><br><span class="line">print(<span class="string">"The predictions are"</span>)</span><br><span class="line">print(model.predict(X.head()))</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>小贴士：<ul>
+<li>可以先使用<strong>training data</strong>进行预测来检验模型的效果</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>总览</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>爬虫</title>
+    <url>/2020/03/05/%E7%88%AC%E8%99%AB/</url>
+    <content><![CDATA[<h1 id="爬虫技术"><a href="#爬虫技术" class="headerlink" title="爬虫技术"></a>爬虫技术</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>由于机器学习的需要，需要从互联网上获取数据，利用爬虫可以从某个网站爬取需要的数据，进行清洗，关联，处理，可视化，以及用作训练模型等。本文使用python3环境。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="HTML语言"><a href="#HTML语言" class="headerlink" title="HTML语言"></a>HTML语言</h3><p>HTML(hyper text marked language)是一种超文本标记语言，可以生成<strong>超文本</strong>，使用浏览器访问服务器是返回的就是这种语言的文本。</p>
+<p>HTML语言的基本单位是<strong>标签</strong>，一个标签包含<strong>标签名</strong>，<strong>属性</strong>，和<strong>元素</strong>，其中元素可以是文本，图片等内容，使用标签可以使这些元素以特定的形式呈现出来。</p>
+<h4 id="程序清单"><a href="#程序清单" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span> &gt;</span>这是标题<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上就是HTML语言的代码，其中“这是标题”是这个网页的标题。</p>
+<h3 id="requests模块"><a href="#requests模块" class="headerlink" title="requests模块"></a>requests模块</h3><p>requests库是python的一个网络模块，<code>anaconda</code>自带，如果是<code>python3</code>则需要<code>pip install requests</code>进行安装。<code>python</code>也有自带的<code>urllib</code>模块，不过使用不便并且功能较少。</p>
+<h4 id="程序清单-1"><a href="#程序清单-1" class="headerlink" title="程序清单"></a>程序清单</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'Cookie'</span>:<span class="string">'OCSSID=4df0bjva6j7ejussu8al3eqo03'</span>,</span><br><span class="line">    <span class="string">'User-Agent'</span>:<span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'</span></span><br><span class="line">                 <span class="string">'(KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'</span>,</span><br><span class="line">&#125;</span><br><span class="line">r = requests.get(<span class="string">'https://www.douban.com/'</span>, headers = headers)</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
+
+<p>以上是使用<code>requests</code>库访问豆瓣主页的一段代码，其中<code>get</code>函数第一个参数是所访问网站的<strong>URL地址</strong>，<code>headers</code>是发送请求的头字段，为可选参数，是一个dict，其中<code>User-Agent</code>属性表示访问的对象。</p>
+<h3 id="Pandas模块"><a href="#Pandas模块" class="headerlink" title="Pandas模块"></a>Pandas模块</h3><p><code>Pandas</code>中的<code>DataFrame</code>类型用来形成和处理结构化的数据，二维的<code>DataFrame</code>对象有行索引和列索引，并可以使用<code>to_excel</code>和<code>to_csv</code>函数生成excel文件和CSV文件。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上为了解爬虫技术的基础，之后会结合一个爬取旅游景点热度以及可视化的案例来深入学习一些细节问题。</p>
+<p>最后贴上一张可视化的图像:</p>
+<p><img src="https://i.loli.net/2020/03/05/4EpaMf75utTcnW1.png" alt="北京旅游.PNG"></p>
+<p>数据来源于某旅游信息网站。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>爬虫</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+        <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实例分析（一）</title>
+    <url>/2020/03/06/%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="实例分析（一）"><a href="#实例分析（一）" class="headerlink" title="实例分析（一）"></a>实例分析（一）</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>本文结合上文所述爬取旅游网站数据的实例进行分析，包括数据爬取，关联，清洗，导出为xml文件。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p>首先展示目标网站的信息:</p>
+<p><img src="https://i.loli.net/2020/03/06/SNyLP2CmTwEt5fA.png" alt="目标网站.png"></p>
+<p>其中黄色框是该页面的一个景区展示框，红色框是我们要获取的每个景区的信息。</p>
+<p>该网站的地址是<a href="https://travel.qunar.com/p-cs299878-shanghai-jingdian-1-1，其中通过更改末尾的一个数字可以访问不同的景点页面。" target="_blank" rel="noopener">https://travel.qunar.com/p-cs299878-shanghai-jingdian-1-1，其中通过更改末尾的一个数字可以访问不同的景点页面。</a></p>
+<p>我们的目标是获取5个页面50个景点的信息，并导出为xml文件。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br></pre></td></tr></table></figure>
+
+<p>首先导入需要的模块。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'Cookie'</span>:<span class="string">'OCSSID=4df0bjva6j7ejussu8al3eqo03'</span>,</span><br><span class="line">    <span class="string">'User-Agent'</span>:<span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'</span></span><br><span class="line">                 <span class="string">'(KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'</span>,</span><br><span class="line">&#125;</span><br><span class="line">home_url = <span class="string">'https://travel.qunar.com/p-cs299878-shanghai-jingdian-1-'</span></span><br></pre></td></tr></table></figure>
+
+<p>这是HTTP header，和网站的地址，保留最后一个数字，以便之后控制访问的页面。</p>
+<h4 id="生成页面URL地址的列表"><a href="#生成页面URL地址的列表" class="headerlink" title="生成页面URL地址的列表"></a>生成页面URL地址的列表</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_urls</span><span class="params">(url,n=<span class="number">5</span>)</span>:</span></span><br><span class="line">    lst = [url+str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,n+<span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">return</span> lst</span><br></pre></td></tr></table></figure>
+
+<p><code>lst</code>中包含有前n个页面的URL地址。</p>
+<h4 id="使用requests模块获取一页的HTML代码"><a href="#使用requests模块获取一页的HTML代码" class="headerlink" title="使用requests模块获取一页的HTML代码"></a>使用<code>requests</code>模块获取一页的HTML代码</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">url_list = get_urls(home_url,<span class="number">10</span>)</span><br><span class="line"><span class="comment"># 先获取第一页</span></span><br><span class="line">ri = requests.get(url_list[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># 使用BS模块解析获取的HTML代码</span></span><br><span class="line">soupi = BeautifulSoup(ri.text, <span class="string">"lxml"</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="提取需要的信息"><a href="#提取需要的信息" class="headerlink" title="提取需要的信息"></a>提取需要的信息</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 找到每条评论</span></span><br><span class="line">all_com = soupi.find(<span class="string">"ul"</span>,class_=<span class="string">'list_item clrfix'</span>).find_all(<span class="string">'li'</span>)</span><br><span class="line"><span class="comment"># 解析每条评论</span></span><br><span class="line">inf_list = []</span><br><span class="line"><span class="keyword">for</span> com <span class="keyword">in</span> all_com:</span><br><span class="line">    inf_dic = &#123;&#125;</span><br><span class="line">    inf_dic[<span class="string">'lat'</span>] = i[<span class="string">'data-lat'</span>]</span><br><span class="line">    inf_dic[<span class="string">'lng'</span>] = i[<span class="string">'data-lng'</span>]</span><br><span class="line">    inf_dic[<span class="string">'景点名称'</span>] = i.find(<span class="string">'span'</span>, class_=<span class="string">'cn_tit'</span>).text</span><br><span class="line">    inf_dic[<span class="string">'攻略数量'</span>] = i.find(<span class="string">'div'</span>, class_=<span class="string">"strategy_sum"</span>).text</span><br><span class="line">    inf_dic[<span class="string">'评论数量'</span>] = i.find(<span class="string">'div'</span>, class_=<span class="string">"comment_sum"</span>).text</span><br><span class="line">    inf_dic[<span class="string">'景点排名'</span>] = i.find(<span class="string">'span'</span>,class_=<span class="string">'sum'</span>).text        </span><br><span class="line">    inf_dic[<span class="string">'星级'</span>] = i.find(<span class="string">'span'</span>, class_=<span class="string">'total_star'</span>).find(<span class="string">'span'</span>)[<span class="string">'style'</span>].split(<span class="string">':'</span>)[<span class="number">1</span>]</span><br><span class="line">    inf_list.append(inf_dic)</span><br></pre></td></tr></table></figure>
+
+<p>这样，每条评论中的信息就以<code>dic</code>的形式保存在<code>inf_list</code>中了。</p>
+<p>其中一个<code>dic</code>：</p>
+<figure class="highlight 1c"><table><tr><td class="code"><pre><span class="line">&#123;'lat': '31.<span class="number">146751</span>', 'lng': '121.<span class="number">669396</span>', '景点名称': '上海迪士尼度假区Shanghai Disney Resort', '攻略数量': '164', '评论数量': '<span class="number">2506</span>3', '景点排名': '3%', '星级': '96%'&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="转化为DataFrame"><a href="#转化为DataFrame" class="headerlink" title="转化为DataFrame"></a>转化为<code>DataFrame</code></h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将字典列表转化为DataFrame</span></span><br><span class="line">df = pd.DataFrame()</span><br><span class="line">df_onePage = pd.DataFrame(inf_list)</span><br><span class="line">df = pd.contact([df, dfi])</span><br><span class="line">df.reset_index(inplace=<span class="literal">True</span>, drop=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这样就把列表转化为<code>Pandas</code>中的<code>DataFrame</code>二维结构，即带有行，列索引的二维表格。</p>
+<h4 id="导出为Excel格式"><a href="#导出为Excel格式" class="headerlink" title="导出为Excel格式"></a>导出为Excel格式</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df.to_excel(<span class="string">"....xmls"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后使用excel表格的三维地图绘制功能就可以啦。</p>
+<p>当然，DataFrame本身也有数据可视化的功能，可以参考官方文档。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>爬虫</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+        <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>贪吃蛇（一）</title>
+    <url>/2020/03/21/%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="README"><a href="#README" class="headerlink" title="README"></a>README</h1><p>刚学了一些python的语法，于是写了一个贪吃蛇的小游戏。虽然游戏很小，不过因为是第一次用python写GUI程序，还是遇到一些问题，所以贴出来总结下。这个使用pygame库，主要使用里面的事件处理和2D图形模块。</p>
+<a id="more"></a>
+
+<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="明确目标"><a href="#明确目标" class="headerlink" title="明确目标"></a>明确目标</h2><p>目标很明确，就是诺基亚手机里面的都有的贪吃蛇游戏，蛇可以在固定的区域活动（移动和转向），可以吃食物变长，但是不能撞到自己。过程中要统计吃的食物个数，还可以修改蛇的速度，Game Over之后按空格键重新开始。</p>
+<h2 id="分解问题"><a href="#分解问题" class="headerlink" title="分解问题"></a>分解问题</h2><h3 id="3个对象"><a href="#3个对象" class="headerlink" title="3个对象"></a>3个对象</h3><p>按照面向对象的思想，这个程序可以拆解为3个对象，游戏的控制和2D界面，蛇和食物。他们之间和关系可以用一张图来表示：</p>
+<img src="https://i.loli.net/2020/03/21/fkFGLyTzX6tuRZ3.png" alt="pic_1.PNG" style="zoom:80%;" />
+
+<h3 id="Snake类"><a href="#Snake类" class="headerlink" title="Snake类"></a><code>Snake</code>类</h3><p>蛇必须有自身位置的信息，还有方向的信息，将这些设置为属性，初始化时必须选择初值。蛇可以进行<strong>移动</strong>，<strong>改变方向</strong>，<strong>吃食物</strong>，<strong>死亡</strong>的行为，每个行为将对应一个方法。</p>
+<p>如下图：</p>
+<img src="https://i.loli.net/2020/03/21/lMyQPDInBVAwUEc.png" alt="snake_1.PNG" style="zoom:80%;" />
+
+<h3 id="Food类"><a href="#Food类" class="headerlink" title="Food类"></a><code>Food</code>类</h3><p>食物需要包含自身位置信息，设为属性，初始化时需要设置初值。食物再被吃掉后需要更新位置，应该是随机的，但是能再蛇身上，不能再区域外。</p>
+<h3 id="Main类"><a href="#Main类" class="headerlink" title="Main类"></a><code>Main</code>类</h3><p>这个类承担的任务比较多，首先应该包含基本的信息，比如区域的像素大小，每个方格的边长，然后还有更新蛇的时间间隔，以及其他的包括文字显示参数（大小，字体，位置，颜色），还有背景，蛇，食物方块的颜色。其中，区域的像素大小和方格的边长信息再<code>Snake</code>和<code>Food</code>类中都要使用，所以设置为公共变量。</p>
+<p>（填坑中。。。）</p>
+]]></content>
+      <categories>
+        <category>微性项目</category>
+        <category>贪吃蛇小游戏</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>贪吃蛇</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>线上耳机销售数据分析</title>
+    <url>/2020/05/17/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="线上耳机销售数据分析（一）"><a href="#线上耳机销售数据分析（一）" class="headerlink" title="线上耳机销售数据分析（一）"></a>线上耳机销售数据分析（一）</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>电商平台上耳机品种繁多，价格各异，本文将爬取淘宝网上的耳机商品数据，包括耳机的<em>品牌，型号，连接类型，平均评分，按月销量$^{[1]}$，按月价格$^{[2]}$，佩戴方式，耳机类别</em>。然后通过这些数据进行分析$^{[3]}$。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h3><p>使用xpath来提取数据，首先进行数据的定位，通过chrome浏览器的<em>检查元素</em>功能，可以完成。</p>
+<p><strong>近三十天的销量，评论总数：</strong><code>//*[@class=&quot;tm-count&quot;]</code></p>
+<p><strong>品牌，型号，连接类型，佩戴方式，耳机类别：</strong><code>//*[@id=&quot;J_AttrUL&quot;]</code></p>
+<img src="https://i.loli.net/2020/05/18/tQGn9KlbuA8q7kP.png" alt="Pic01_Tag.PNG" style="zoom: 80%;" title="网页中属性的截取" />
+
+<p><strong>按月价格：</strong>把商品连接输入喵喵折进行搜索，可以得到。</p>
+<h3 id="Scrapy"><a href="#Scrapy" class="headerlink" title="Scrapy"></a>Scrapy</h3><p>Scrapy 是一个数据爬取，清洗框架。</p>
+<h4 id="Tmspid文件"><a href="#Tmspid文件" class="headerlink" title="Tmspid文件"></a><code>Tmspid</code>文件</h4><p>本文件中需要对<code>request</code>的对象做出定义（URL地址），并且需要解析得到的相应以提取数据。为此，我们需要定义一个继承<code>scrapy.Spider</code>类的类，叫做<code>Tmspid</code>。我们需要覆盖父类的一些属性，如<code>name</code>，<code>start_urls</code>，同时需要覆盖其中的<code>parse</code>方法。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"><span class="keyword">from</span> TmallSpider.items <span class="keyword">import</span> tmItem</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tmspid</span><span class="params">(scrapy.Spider)</span>:</span></span><br><span class="line">    name = <span class="string">"tmspid"</span></span><br><span class="line">    BASE_URL = <span class="string">'https://s.taobao.com/search?q=耳机&amp;s='</span></span><br><span class="line">    start_urls = [BASE_URL+str(<span class="number">44</span>*x) <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>)]</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse</span><span class="params">(self, response)</span>:</span></span><br><span class="line">        selectors = response.xpath(<span class="string">'//*[@class="row row-2 title"]'</span>)</span><br><span class="line">        <span class="keyword">for</span> selector <span class="keyword">in</span> selectors:</span><br><span class="line">            goods = selector.xpath(<span class="string">'./a/@href'</span>).ger()</span><br><span class="line">            <span class="keyword">yield</span> scrapy.Request(url=goods, callback=self.new_parse)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">new_parse</span><span class="params">(self, response)</span>:</span></span><br><span class="line">        item = TmallspiderItem()</span><br><span class="line">        <span class="comment">#框框里面的信息</span></span><br><span class="line">        goods_inf = response.xpath(<span class="string">'//*[@id="J_AttrUL"]'</span>)</span><br><span class="line">        <span class="comment">#近三十天的销量</span></span><br><span class="line">        goods_mon_amount = response.xpath(<span class="string">'//*[@class="tm-count"]'</span>)[<span class="number">0</span>]</span><br><span class="line">        <span class="comment">#品牌</span></span><br><span class="line">        item.brand = goods_inf.xpath(<span class="string">'./li[contains(text(), "品牌")]/text()'</span>).get()</span><br><span class="line">        <span class="comment">#产品名称</span></span><br><span class="line">        item.name = goods_inf.xpath(<span class="string">'./li[contains(text(), "产品名称")]/text()'</span>).get()</span><br><span class="line">        <span class="comment">#连接方式</span></span><br><span class="line">        item.cp = goods_inf.xpath(<span class="string">'./li[contains(text(), "连接方式")]/text()'</span>).get()</span><br><span class="line">        <span class="comment">#入耳</span></span><br><span class="line">        item.wm = goods_inf.xpath(<span class="string">'./li[contains(text(), "使用方式")]/text()'</span>).get()</span><br><span class="line">        <span class="comment">#类别</span></span><br><span class="line">        item.type = goods_inf.xpath(<span class="string">'./li[contains(text(), "耳机类别")]/text()'</span>).get()</span><br></pre></td></tr></table></figure>
+
+<p><code>parse</code>中的<code>scrapy.Request</code>是一个类，创建这个实例的时候，会对传递的url地址发出请求，会得到相应的response，然后将调用传递的callback回调函数，并以response作为参数。此处的回调函数为<code>new_parse</code>。</p>
+<p>要在再返回的HTML中提取数据，首先需要通过chrome定位HTML标签的位置，然后按照标签的标签名，属性和文本内容选择相应的标签，然后提取标签文本，再用正则表达式进行适当的处理。</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>[1] 由于淘宝网只给出了最近30天的销量数据，也没有其他数据来源，所以通过评论数据的月分布来推断每个月的销售数据。</p>
+<p>[2] 由于淘宝网没有给出每月的价格，但是有<em>喵喵折</em>网统计了商品自上架销售以来的按月价格，所以以此为数据来源。</p>
+<p>[3] 分析非本人所作。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>爬虫</category>
+        <category>线上耳机销售数据分析</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+        <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>线上耳机销售数据分析(二)</title>
+    <url>/2020/05/26/%E7%BA%BF%E4%B8%8A%E8%80%B3%E6%9C%BA%E9%94%80%E5%94%AE%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%BA%8C/</url>
+    <content><![CDATA[<h1 id="线上耳机销售数据分析（二）"><a href="#线上耳机销售数据分析（二）" class="headerlink" title="线上耳机销售数据分析（二）"></a>线上耳机销售数据分析（二）</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在爬取喵喵折查询商品历史价格的过程中，遇到了反爬虫机制，本文主要解决反爬虫的问题。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h3><h4 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h4><p>Uniform Resource Locator 是是因特网的万维网服务程序上用于指定信息位置的表示方法。常见的URL由协议类型(Protocol)，主机(Host)，路径(Path)，查询参数(Query)组成。</p>
+<img src="https://i.loli.net/2020/05/26/cTpE37P6SVI2txu.png" alt="URL结构.PNG" style="zoom:50%;" />
+
+<h4 id="两方的行为"><a href="#两方的行为" class="headerlink" title="两方的行为"></a>两方的行为</h4><p>在互联网中，有两种角色，客户端和服务器。客户端向服务器提供<strong>请求(Request)</strong>，服务器接受请求，返回<strong>响应(Response)</strong>到客户端。返回的响应包含了所请求的<strong>资源(Resource)</strong>，包括HTML文档，图片，文本等等。</p>
+<p>一个请求包括五部分，<strong>请求方式，路径和查询参数，HTTP协议版本，请求头(Request headers)，请求体&lt;可选&gt;(Request body)</strong>。请求方式包括GET,POST等。请求头可以设置接受响应资源的类型等（有规范的样式）。请求体是需要发送给服务器的数据（比如搜索的文本内容）。</p>
+<img src="https://i.loli.net/2020/05/26/ofuO6xPMpEdmL3C.png" alt="浏览器请求.PNG" style="zoom:50%;" />
+
+<p>一个响应包括四部分，<strong>HTTP版本，相应状态码，响应头(Response headers)，响应体(Response body)</strong>。响应状态码如图。</p>
+<img src="https://i.loli.net/2020/05/26/6vfsc9STRGm8rLN.png" alt="服务器相应.PNG" style="zoom:50%;" />
+
+<img src="https://i.loli.net/2020/05/26/dwk9MH47ARE5zpG.png" alt="响应状态码.PNG" style="zoom:50%;" />
+
+<h3 id="解铃还须系铃人"><a href="#解铃还须系铃人" class="headerlink" title="解铃还须系铃人"></a>解铃还须系铃人</h3><p>再爬取的过程中，首先用<code>selenium</code>进行了测试，发现结果显示验证不通过，而在<code>Chrome</code>打开则可以获取数据。之后多次尝试后，<code>Chrome</code>也无法通过验证，不断显示错误信息，验证不通过，在手动滑块验证后，也不能够获取信息。可以推测网站使用了多种反爬虫手段。为了解决问题，首先需要了解一些常用的反爬虫手段。从服务器端所能得到的信息看，网站可能从三方面反爬虫：<strong>Request Headers</strong>，<strong>用户行为</strong>，<strong>网站目录和数据加载方式</strong>。前两种较为常见，第三种一些使用<code>Ajax</code>(Asynchronous Javascript And XML)技术的网站可能使用（目标网站喵喵折正是这种）。</p>
+<h4 id="Request-Headers"><a href="#Request-Headers" class="headerlink" title="Request Headers"></a>Request Headers</h4><p>一些网站通过对Headers中的<code>User-Agent</code>参数进行检测，而我们可以通过修改Request中该参数，将浏览器的User-Agent复制来反爬虫。</p>
+<h4 id="基于用户行为的反爬虫"><a href="#基于用户行为的反爬虫" class="headerlink" title="基于用户行为的反爬虫"></a>基于用户行为的反爬虫</h4><p>比如同一IP访问同一页面频率过高，或者同一账户(通过cookies记录)进行某类操作过于频繁。</p>
+<p>如果是第一种情况，可以使用代理IP解决问题，网上有公开的代理IP可以使用。</p>
+<p>如果是后者，可以人为降低频率，或者网站有逻辑漏洞，那么可以通过反复登录来绕过检测。</p>
+<h4 id="动态页面的反爬虫"><a href="#动态页面的反爬虫" class="headerlink" title="动态页面的反爬虫"></a>动态页面的反爬虫</h4><p>如果我们想要的数据通过<strong>Ajex请求</strong>得到，那么首先需要通过Chrome来分析请求，如果能够直接分析出<strong>Request的参数</strong>，那直接可以通过<code>request</code>来模拟这个Ajex请求，得到想要的json数据。而网站也有防范措施，加密ajax参数，这样我们无法通过模仿请求得到数据。当然也可以分析JS代码来破解加密。</p>
+<p>这时，可以通过selenium来模拟浏览器人为操作，从而获取数据。如果网站有点触式或者滑动式的验证码，可以对利用selenium+phantomJS来验证。</p>
+<h4 id="Javascript反爬虫"><a href="#Javascript反爬虫" class="headerlink" title="Javascript反爬虫"></a>Javascript反爬虫</h4><p>selenium在运行的时候会暴露出一些预定义的Javascript变量（特征字符串，不同的浏览器可能不同），例如”window.navigator.webdriver”，在非selenium环境下其值为undefined，而在selenium环境下，其值为true。利用这个特性，网站的设计者可以通过在网页的JS代码中添加检测的功能，来防止selenium+浏览器driver爬虫。</p>
+<p>这种情况下，我们也可以通过使用中间代理人，如fidder,proxy2.py或者mitmproxy，将JS文件种的特征字符串过滤或替换，让它无法正常工作，从而让网页JS检测不到。</p>
+<h3 id="目标网站"><a href="#目标网站" class="headerlink" title="目标网站"></a>目标网站</h3><p>根据测试的结果，目标网站应该同时使用了JS反爬虫，Ajex请求参数加密，验证（超过一定的次数），IP封禁（超过一定频率就返回空值导致错误）这些反爬虫的技术，使用相应的方法即可破解。</p>
+<img src="https://i.loli.net/2020/05/28/fHC1VOMxQe3yRZJ.png" alt="参数.PNG" style="zoom:67%;" />
+
+<img src="https://i.loli.net/2020/05/28/GhxMe5POU1jzByt.png" alt="Request截图.PNG" style="zoom: 67%;" />
+
+<p>如上图，<code>Request</code>的请求体中的nvcVal参数为加密后的，几乎无规律可循。而RequestURL地址也可以看出，请求调用的是网站内部的api接口，参数是加密的。</p>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><h4 id="模拟request"><a href="#模拟request" class="headerlink" title="模拟request"></a>模拟<code>request</code></h4><p>这种方法需要详细分析网站的JS代码，找到参数生成的方法，从而发送请求。但是本人还没有熟悉过<code>Javascript</code>的语法，分析起来比较费劲。</p>
+<h4 id="全真模拟手动操作浏览器"><a href="#全真模拟手动操作浏览器" class="headerlink" title="全真模拟手动操作浏览器"></a>全真模拟手动操作浏览器</h4><p>需要模拟的操作，输入，鼠标移动，点击，滚动条滚动，删除，还有最重要的元素选择。</p>
+<p>元素选择可以通过<code>CSS selector</code>，<code>Xpath</code>，还有某些库自定的选择方法，但是总体上都是需要从HTML标签的名称和属性来考虑。选择可以固定选择，也可以选择多项，得到一个<code>list</code>。</p>
+<p>如果需要翻页，可以模拟点击，也可以直接分析如果是<code>GET</code>请求，则可以分析URL，使用循环来代替点击下一步。</p>
+<h5 id="反爬虫技巧"><a href="#反爬虫技巧" class="headerlink" title="反爬虫技巧"></a>反爬虫技巧</h5><ul>
+<li>使用<code>time.sleep()</code>函数和<code>random.random()</code>函数来降低访问的频率（和手速相仿）和使用随机频率，从而防止判定为爬虫。</li>
+<li>高频率访问不会封禁而只是需要验证（简单的滑块或者是比较复杂的拼图验证等），如果比较好过的话，可以放开速度爬。验证操作时，注意弹出的验证窗口不再本窗口中。</li>
+<li>使用异常处理机制处理不规则的验证情况。</li>
+<li>使用<code>pyppeteer</code>的<code>page.evaluate()</code>函数执行屏蔽浏览器预定的变量的JS代码防止被识别浏览器指纹。</li>
+<li>换账号爬取，使用不同账号交替登录爬取。</li>
+</ul>
+<h5 id="遇到的错误"><a href="#遇到的错误" class="headerlink" title="遇到的错误"></a>遇到的错误</h5><ul>
+<li>元素无法选择到，这多半是由于没有加载完全，可以使用<code>sleep</code>等待或者<code>waitSelector()</code>函数来等待元素加载完全。</li>
+<li>元素选择在不同的页面不同，可以自由调整，使用基本的键鼠操作。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>爬虫</category>
+        <category>线上耳机销售数据分析</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+        <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>朴素贝叶斯算法</title>
+    <url>/2020/06/05/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="README"><a href="#README" class="headerlink" title="README"></a>README</h1><p>朴素贝叶斯算法的原理是概率论的条件概率，本文介绍其原理和数学推导，并举例。</p>
+<p>Bayes: $P(A|B)= \frac {P(B|A)P(A)}{P(B)}$</p>
+<a id="more"></a>
+
+<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="条件概率"><a href="#条件概率" class="headerlink" title="条件概率"></a>条件概率</h2><p>条件概率是一种对于事件的测度，和概率的区别在于，它是<strong>后验的</strong>，补充了相关的信息的测度。再其定义$P(A|B)=\frac{P(AB)}{P(B)}$中，$B$发生就是这样一个补充的信息，这就是$P(A)$和$P(A|B)$的关键区别。</p>
+<p>生活中常说两个事件$A,B$的因果关系，在概率上可以体现为两个事件之间的独立性。如$A:早上睡懒觉$是因，$B:第一节课迟到了$是果，那么$A$和$B$之间再概率上的关系是<strong>相互不独立</strong>的。因此，我们可以根据一个人早上迟到的事实推测他早上睡懒觉的概率（不是一定的，也可能是身体不适等），也可以早上睡懒觉的事实来推断他迟到的可能性（也可能不吃早餐，于是没迟到，但是吃不吃早餐暂时不纳入考虑中）。前者是执果索因，后者是执因求果。</p>
+<p>贝叶斯定理的意义在于给出了两个事件之间的颠倒，知道了因对果的影响，便可以知道果由因造成的可能性。</p>
+<h2 id="朴素贝叶斯算法"><a href="#朴素贝叶斯算法" class="headerlink" title="朴素贝叶斯算法"></a>朴素贝叶斯算法</h2><h3 id="向量空间模型"><a href="#向量空间模型" class="headerlink" title="向量空间模型"></a>向量空间模型</h3><p><strong>向量空间模型</strong>(VSM)是用一个$R^{n}$的$n$维向量空间表示一个<strong>对象</strong>(instance)的方法，向量的每一个维度代表了对象的<strong>属性</strong>(attribute)。向量空间模型的关键在于利用向量的<strong>数学性质</strong>来代表对象的<strong>性质</strong>。</p>
+<h3 id="朴素贝叶斯算法-1"><a href="#朴素贝叶斯算法-1" class="headerlink" title="朴素贝叶斯算法"></a>朴素贝叶斯算法</h3><p>基于向量空间模型（在表示已有的样本的时候），朴素贝叶斯算法将对象的分类问题，转化为了一个以这个向量空间为样本空间的一个概率问题。就是，已知对象的某些属性（n-1个属性）想要知道对象分类(第n个属性)，变成了前n-1个随机变量对最后一个变量的条件概率问题，这就就是朴素贝叶斯的基本原理了。</p>
+<p>但是，在实践的过程当中，我们不会事先就知道这个概率的大小，我们需要通过<strong>统计</strong>得到相应的概率。以中文的文本分类问题为例：</p>
+<p>我们统计的对象是<strong>已经做好标记</strong>（监督学习）的一些文本，标记是是否主要和中国相关，我们首先将这些文本中出现过的<strong>中文词</strong>列出来，然后以每个对象中词的有无作为随机变量$X_{i}=$1或0。</p>
+<p>文本词数的统计的结果如下表：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>编号</th>
+<th>上海</th>
+<th>北京</th>
+<th>武汉</th>
+<th>纽约</th>
+<th>华盛顿</th>
+<th>标记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>训练集</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>是</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>是</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>是</td>
+</tr>
+<tr>
+<td></td>
+<td>4</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>否</td>
+</tr>
+<tr>
+<td>测试文档</td>
+<td>5</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>$C$代表主要与中国相关，首先我们可以根据训练集得到$P(C)=\frac{3}{4}$，然后$P(\overline{C})=\frac{1}{4}$。我们需要计算$P(C|x)$，但是由于在样本的属性较多的情况下，我们可能无法找到和测试文档属性相同的训练集文档，这时直接通过训练集计算这个概率不容易实现（此处不用到向量的概念，以及几何意义）。因此通过贝叶斯定理转化为$P(x|C)$再根据<strong>属性条件独立性假设</strong>，将其差分为$P(x_{i}|C)$相乘。</p>
+<p>至于如何计算$P(x_{i}|C)$，有多种计算方法，由于这里面的$x_{i}$只0，1有两种取值，可以考虑用训练集中$C$类型样本$i$对应的的词数除以总词数得到。</p>
+<p>最后，只需要通过比较$P(x|C)P(C)$和$P(x|\overline{C})P(\overline{C})$的大小得到，因为分母都是$P(x)$。</p>
+<h4 id="拉普拉斯修正"><a href="#拉普拉斯修正" class="headerlink" title="拉普拉斯修正"></a>拉普拉斯修正</h4><p>在主要关于中国的文章中，一般而言，很少出现马达加斯加，但是如果有一篇文章，出现了马达加斯加，那么由于马达加斯加这个属性$P(x_{i}|C)$为0，这时必然出现误判。为修正我们在分子加上1，分母加上属性的个数，这样保证了可列可加且和和为1。</p>
+<h4 id="连续型的属性"><a href="#连续型的属性" class="headerlink" title="连续型的属性"></a>连续型的属性</h4><p>如果处理其他问题，比如人的健康水平的时候，一个人的属性可能包含身高这样的连续值，此时，该随机变量为连续型，可以采用该类型分布的密度函数来代表其概率$P(x_{i}|C)$。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K-means算法</title>
+    <url>/2020/06/11/K-means%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="README"><a href="#README" class="headerlink" title="README"></a>README</h1><p>K-means是非监督学习的一种聚类算法。本文介绍其算法，应用。</p>
+<a id="more"></a>
+
+<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>首先需要制定K个聚类。</p>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">随机选择K个中心点</span><br><span class="line"><span class="keyword">repeat</span>&#123;</span><br><span class="line">	将样本点划分聚类</span><br><span class="line">	求取聚类的中心</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>数学上可以证明以上步骤有限，且可以使得<strong>优化函数</strong>最小（可能是局部的）。</p>
+<h2 id="要点"><a href="#要点" class="headerlink" title="要点"></a>要点</h2><ul>
+<li>选择K个聚类的方法</li>
+<li>随机点的选取</li>
+<li>优化函数的证明</li>
+</ul>
+<h3 id="如何选择K个聚类？"><a href="#如何选择K个聚类？" class="headerlink" title="如何选择K个聚类？"></a>如何选择K个聚类？</h3><ul>
+<li>根据直觉观察</li>
+<li>根据应用场景进行选择</li>
+</ul>
+<h3 id="随机点的选择"><a href="#随机点的选择" class="headerlink" title="随机点的选择"></a>随机点的选择</h3><p>选择不同的随机点对算法的结果有不同的影响。所以，如果选择一组随机点，那么可能使得算法陷入局部最优，此时通过选取多组随机点，取得到的结果的优化函数最小的，可以提高找到最优的概率。</p>
+<h3 id="优化函数的证明"><a href="#优化函数的证明" class="headerlink" title="优化函数的证明"></a>优化函数的证明</h3><h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2>]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>机器学习</category>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python生成可执行文件</title>
+    <url>/2020/06/18/Python%E7%94%9F%E6%88%90%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="Python生成可执行文件"><a href="#Python生成可执行文件" class="headerlink" title="Python生成可执行文件"></a>Python生成可执行文件</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>环境python3.7.4(conda)+win10</p>
+<p>生成exe文件，并可移植</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="pyinstaller"><a href="#pyinstaller" class="headerlink" title="pyinstaller"></a>pyinstaller</h3><figure class="highlight ada"><table><tr><td class="code"><pre><span class="line">pyinstaller <span class="comment">--onefile path\filename.py</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line">错误：utf<span class="number">-8</span> can't decode ...</span><br><span class="line">chcp <span class="number">65001</span></span><br></pre></td></tr></table></figure>
+
+<p>生成两个目录dist和build，dist里面有exe文件，build存储一些编译中间文件。</p>
+<h3 id="移植出现问题及原因"><a href="#移植出现问题及原因" class="headerlink" title="移植出现问题及原因"></a>移植出现问题及原因</h3><h4 id="文件的路径"><a href="#文件的路径" class="headerlink" title="文件的路径"></a>文件的路径</h4><p>使用相对路径，有两种，文件路径，还有执行的路径，如果是py文件则应该使用前者生成绝对路径，如果是exe文件，应该使用后者。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line">path1 = os.path.join(os.path.abspath(), <span class="string">'filename.txt'</span>)</span><br><span class="line">path2 = os.path.join(os.path.dirname(__file__), <span class="string">'filename.txt'</span>)</span><br><span class="line">f = open(path1, encoding = <span class="string">'utf-8'</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="环境配置不同"><a href="#环境配置不同" class="headerlink" title="环境配置不同"></a>环境配置不同</h4><p>参考链接$^{[1]}$：<a href="https://blog.csdn.net/qq_26820797/article/details/90950899?utm_medium=distribute.pc_relevant.none-task-blog-baidujs-1" target="_blank" rel="noopener">移植到另一台电脑出错</a></p>
+]]></content>
+      <categories>
+        <category>编程经验</category>
+        <category>技巧</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>可执行文件</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Numpy</title>
+    <url>/2020/06/20/Numpy/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>pyinstaller打包py程序</title>
+    <url>/2020/06/20/pyinstaller%E6%89%93%E5%8C%85py%E7%A8%8B%E5%BA%8F/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>wxPython图形化编程</title>
+    <url>/2020/06/20/wxPython%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%BC%96%E7%A8%8B/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>正则表达式</title>
+    <url>/2020/06/20/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>本文介绍正则表达式的语法和应用</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>正则表达式，是一串具有特殊意义的字符串，用以表示一个字符串模板，使用这个模板，可以对一段文本进行匹配，得到文本中符合模板的字符串及其位置。</p>
+<h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><p>一个模板中的组成包括两类，字符类和其他如长度，开头等。</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>含义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0,1, 2, a, b, c等</td>
+<td>数字和字母</td>
+<td>‘a’匹配字符串中所有的’a’</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>所有的数字</td>
+<td>‘a\d’可以匹配’a1’, ‘a2’等</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>所有的字母和数字</td>
+<td>‘\w\w\d’可以匹配’py3’</td>
+</tr>
+<tr>
+<td>.</td>
+<td>任意字符</td>
+<td>‘…’可以匹配所有的长度为3的字符串</td>
+</tr>
+<tr>
+<td>\s</td>
+<td>空格</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\[</code>,<code>\(</code>,<code>\-</code>,<code>\_</code>,<code>\^</code>,<code>\$</code>,<code>|</code>,<code>\*</code>,<code>\+</code>,<code>\?</code>,<code>\{</code>,<code>\,</code></td>
+<td>转义的特殊字符</td>
+<td>‘(‘可以匹配左括号</td>
+</tr>
+<tr>
+<td>*</td>
+<td>长度符，任意长度</td>
+<td>‘a*’可以匹配’a’, ‘aa’等</td>
+</tr>
+<tr>
+<td>+</td>
+<td>长度符，至少一个字符</td>
+<td>‘\s’可以匹配’ ‘, ‘  ‘等，但不可以匹配’’</td>
+</tr>
+<tr>
+<td>{9}</td>
+<td>长度符，表示9个</td>
+<td>‘a{2}b{3}’可以匹配’aabbb’</td>
+</tr>
+<tr>
+<td>{3,4}</td>
+<td>长度符，表示3-4个</td>
+<td>‘a{3,4}’可以匹配’aaa’和’aaaa’</td>
+</tr>
+<tr>
+<td>-和[]</td>
+<td>表示一组字符</td>
+<td>‘[0-9]’匹配’0’, ‘1’等，’[a-z]’和’[A-Z]’匹配下划线,[\s\d]匹配’ ‘或’0’等</td>
+</tr>
+<tr>
+<td>(A|B)</td>
+<td>或</td>
+<td>‘(P|p)ython’可以匹配’python’或’Python’</td>
+</tr>
+<tr>
+<td>^</td>
+<td>行开头</td>
+<td>‘^\d’表示必须以数字开头</td>
+</tr>
+<tr>
+<td>$</td>
+<td>行结尾</td>
+<td>‘\d$’表示必须以数字结尾</td>
+</tr>
+<tr>
+<td>()</td>
+<td>分组</td>
+<td>‘([a-z])9([A-Z])’匹配’a9A’,’a9B’等，并且可以提取两个字串（仅括号内可以）</td>
+</tr>
+<tr>
+<td>？</td>
+<td>0个或一个字符</td>
+<td>‘0?7’可以匹配’07’和’7’</td>
+</tr>
+</tbody></table>
+<h3 id="Python中的re模块"><a href="#Python中的re模块" class="headerlink" title="Python中的re模块"></a>Python中的re模块</h3><p><code>import re</code></p>
+<p>python中的字符串使用<code>\</code>进行转义，因此要注意：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="string">'A\-Z'</span></span><br><span class="line"><span class="comment"># 对应的正则表达式变成'A-Z'</span></span><br></pre></td></tr></table></figure>
+
+<p>因此应该使用Python的<code>r</code>前缀，这样就避免了转义的问题。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="string">r'A-Z'</span></span><br><span class="line"><span class="comment"># 可以匹配'A-Z'</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>re.match</code>函数</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">re.match(<span class="string">r'ab'</span>, <span class="string">'abc'</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>match</code>函数匹配成功则返回一个<code>Match</code>对象，否则返回<code>None</code>（转化为Boolean类型为<code>False</code>）。</p>
+<ul>
+<li>切分字符串<code>re.split</code>函数</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 普通的split函数</span></span><br><span class="line"><span class="string">'a b    c'</span>.split(<span class="string">" "</span>)</span><br><span class="line"><span class="comment"># 返回['a', 'b', '', '', 'c']</span></span><br><span class="line"><span class="comment"># re的split函数</span></span><br><span class="line">re.split(<span class="string">r'\s+'</span>, <span class="string">'a b   c'</span>)</span><br><span class="line"><span class="comment">#返回['a', 'b', 'c']</span></span><br><span class="line">re.split(<span class="string">r"[\s\,\;]+"</span>, <span class="string">'a,b  c;d'</span>)</span><br><span class="line"><span class="comment">#返回['a', 'b', 'c', 'd']</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>分组<code>Match.group()</code>方法</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 采用之前的分组符号，可以分组，然后使用group()方法获取字串</span></span><br><span class="line">m = re.match(<span class="string">r'^(\d&#123;3&#125;)-(\d&#123;3,8&#125;)$'</span>, <span class="string">'010-12345'</span>)</span><br><span class="line">m.group(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 返回匹配的全串</span></span><br><span class="line">m.group(<span class="number">1</span>)</span><br><span class="line"><span class="comment"># 返回匹配的第一个字串(没有使用括号的除外，(A|B)还需要再使用括号)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>贪婪匹配</li>
+</ul>
+]]></content>
+      <categories>
+        <category>编程经验</category>
+        <category>技能树</category>
+      </categories>
+      <tags>
+        <tag>正则表达式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>面向对象编程</title>
+    <url>/2020/06/30/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="面向对象编程"><a href="#面向对象编程" class="headerlink" title="面向对象编程"></a>面向对象编程</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>Java语言采用面向对象的思想，建立了抽象（类），继承，多态的机制。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="类"><a href="#类" class="headerlink" title="类"></a>类</h3><p>将程序中的对象抽象为拥有字段和方法的类，比如在商品管理中将商品抽象为有用价格，存量等字段和购买，判断是否过期方法的商品类。</p>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>商品类可以有子类，如电子，汽车，食品等，这些子类继承商品类，如果没有重写的话，继承了父类的字段和方法。</p>
+<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><p>子类属于父类，使用isinstance判断时为True。因此当对父类类型的引用变量（引用子类）调用方法时，调用的实际是子类实例的方法，这种现象成为多态，这也是面向对象一个重要的特点，鸭子类型，即行为象鸭子就是鸭子。</p>
+<h3 id="抽象类和接口"><a href="#抽象类和接口" class="headerlink" title="抽象类和接口"></a>抽象类和接口</h3><p>抽象类使用关键字abstract进行定义，其中的方法仅仅作为一个函数签名（类似C中的函数原型定义，规定函数的返回类型，函数名，参数列表），包含字段。如果定义一个抽象类且不包含字段，那么可以使用接口进行定义。</p>
+<h3 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h3><p>子类可以对父类的函数进行重载，即重新定义，具体的语法就是定义一个和父类具有相同的签名的函数，并使用不同的函数体。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>面向对象</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Turtle图形库</title>
+    <url>/2020/06/24/Turtle%E5%9B%BE%E5%BD%A2%E5%BA%93/</url>
+    <content><![CDATA[<h1 id="Turtle-图形库"><a href="#Turtle-图形库" class="headerlink" title="Turtle 图形库"></a>Turtle 图形库</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>Turtle是python的绘图库，依赖于tkinter实现基本的图形界面。该模块采用面向对象和面向过程两种形式的基本组件，可以轻松绘制精美的形状和图案。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="依赖关系"><a href="#依赖关系" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>由于它使用 <a href="https://docs.python.org/zh-cn/3/library/tkinter.html#module-tkinter" target="_blank" rel="noopener"><code>tkinter</code></a> 实现基本图形界面，因此需要安装了 Tk 支持的 Python 版本。</p>
+<h3 id="两种基本组件"><a href="#两种基本组件" class="headerlink" title="两种基本组件"></a>两种基本组件</h3><h4 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h4><p>该组件主要使用“2+2”个类</p>
+<ol>
+<li>TurtleScreen类</li>
+<li>RawTurtle类（别名RawPen）</li>
+</ol>
+<p>TurtleScreen类定义<strong>图形窗口</strong>作为绘图海龟的<em>运动场</em>。其构造器需要一个tkinter.Canvas或者ScrolledCanvas作为参数。</p>
+<p>TurtleScreen存在一个自类Screen，可以由Screen()函数返回，气味单例对象，所属的类不可被继承。</p>
+<p>RawTurtle类定义<strong>海龟对象</strong>在TurtleScreen上绘图。其构造器许哟啊一个tkinter.Canvas或者ScrolledCanvas或TurtleScreen作为参数，以指定海龟的<em>运动场</em>。</p>
+<h4 id="面向过程"><a href="#面向过程" class="headerlink" title="面向过程"></a>面向过程</h4><p>以上类型对象的方法存在对应的作为面向过程的接口函数，当屏幕上需要多个海龟的时候，就必须使用面向对象的接口。</p>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><h4 id="RawTurtle-Turtle-方法"><a href="#RawTurtle-Turtle-方法" class="headerlink" title="RawTurtle/Turtle 方法"></a>RawTurtle/Turtle 方法</h4><ul>
+<li><p>海龟动作</p>
+<p>移动和绘制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.forward" target="_blank" rel="noopener"><code>forward()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.fd" target="_blank" rel="noopener"><code>fd()</code></a> 前进<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.backward" target="_blank" rel="noopener"><code>backward()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bk" target="_blank" rel="noopener"><code>bk()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.back" target="_blank" rel="noopener"><code>back()</code></a> 后退<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.right" target="_blank" rel="noopener"><code>right()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.rt" target="_blank" rel="noopener"><code>rt()</code></a> 右转<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.left" target="_blank" rel="noopener"><code>left()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.lt" target="_blank" rel="noopener"><code>lt()</code></a> 左转<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.goto" target="_blank" rel="noopener"><code>goto()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setpos" target="_blank" rel="noopener"><code>setpos()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setposition" target="_blank" rel="noopener"><code>setposition()</code></a> 前往/定位<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setx" target="_blank" rel="noopener"><code>setx()</code></a> 设置x坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.sety" target="_blank" rel="noopener"><code>sety()</code></a> 设置y坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setheading" target="_blank" rel="noopener"><code>setheading()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.seth" target="_blank" rel="noopener"><code>seth()</code></a> 设置朝向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.home" target="_blank" rel="noopener"><code>home()</code></a> 返回原点<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.circle" target="_blank" rel="noopener"><code>circle()</code></a> 画圆<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.dot" target="_blank" rel="noopener"><code>dot()</code></a> 画点<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.stamp" target="_blank" rel="noopener"><code>stamp()</code></a> 印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearstamp" target="_blank" rel="noopener"><code>clearstamp()</code></a> 清除印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearstamps" target="_blank" rel="noopener"><code>clearstamps()</code></a> 清除多个印章<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.undo" target="_blank" rel="noopener"><code>undo()</code></a> 撤消<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.speed" target="_blank" rel="noopener"><code>speed()</code></a> 速度获取海龟的状态<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.position" target="_blank" rel="noopener"><code>position()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pos" target="_blank" rel="noopener"><code>pos()</code></a> 位置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.towards" target="_blank" rel="noopener"><code>towards()</code></a> 目标方向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.xcor" target="_blank" rel="noopener"><code>xcor()</code></a> x坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ycor" target="_blank" rel="noopener"><code>ycor()</code></a> y坐标<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.heading" target="_blank" rel="noopener"><code>heading()</code></a> 朝向<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.distance" target="_blank" rel="noopener"><code>distance()</code></a> 距离设置与度量单位<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.degrees" target="_blank" rel="noopener"><code>degrees()</code></a> 角度<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.radians" target="_blank" rel="noopener"><code>radians()</code></a> 弧度</p>
+</li>
+<li><p>画笔控制</p>
+<p>绘图状态<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pendown" target="_blank" rel="noopener"><code>pendown()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pd" target="_blank" rel="noopener"><code>pd()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.down" target="_blank" rel="noopener"><code>down()</code></a> 画笔落下<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.penup" target="_blank" rel="noopener"><code>penup()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pu" target="_blank" rel="noopener"><code>pu()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.up" target="_blank" rel="noopener"><code>up()</code></a> 画笔抬起<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pensize" target="_blank" rel="noopener"><code>pensize()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.width" target="_blank" rel="noopener"><code>width()</code></a> 画笔粗细<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pen" target="_blank" rel="noopener"><code>pen()</code></a> 画笔<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.isdown" target="_blank" rel="noopener"><code>isdown()</code></a> 画笔是否落下颜色控制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.color" target="_blank" rel="noopener"><code>color()</code></a> 颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.pencolor" target="_blank" rel="noopener"><code>pencolor()</code></a> 画笔颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.fillcolor" target="_blank" rel="noopener"><code>fillcolor()</code></a> 填充颜色填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.filling" target="_blank" rel="noopener"><code>filling()</code></a> 是否填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.begin_fill" target="_blank" rel="noopener"><code>begin_fill()</code></a> 开始填充<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.end_fill" target="_blank" rel="noopener"><code>end_fill()</code></a> 结束填充更多绘图控制<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.reset" target="_blank" rel="noopener"><code>reset()</code></a> 重置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clear" target="_blank" rel="noopener"><code>clear()</code></a> 清空<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.write" target="_blank" rel="noopener"><code>write()</code></a> 书写</p>
+</li>
+<li><p>海龟状态</p>
+<p>可见性<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.showturtle" target="_blank" rel="noopener"><code>showturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.st" target="_blank" rel="noopener"><code>st()</code></a> 显示海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.hideturtle" target="_blank" rel="noopener"><code>hideturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ht" target="_blank" rel="noopener"><code>ht()</code></a> 隐藏海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.isvisible" target="_blank" rel="noopener"><code>isvisible()</code></a> 是否可见外观<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shape" target="_blank" rel="noopener"><code>shape()</code></a> 形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.resizemode" target="_blank" rel="noopener"><code>resizemode()</code></a> 大小调整模式<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shapesize" target="_blank" rel="noopener"><code>shapesize()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.turtlesize" target="_blank" rel="noopener"><code>turtlesize()</code></a> 形状大小<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shearfactor" target="_blank" rel="noopener"><code>shearfactor()</code></a> 剪切因子<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.settiltangle" target="_blank" rel="noopener"><code>settiltangle()</code></a> 设置倾角<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tiltangle" target="_blank" rel="noopener"><code>tiltangle()</code></a> 倾角<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tilt" target="_blank" rel="noopener"><code>tilt()</code></a> 倾斜<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.shapetransform" target="_blank" rel="noopener"><code>shapetransform()</code></a> 变形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.get_shapepoly" target="_blank" rel="noopener"><code>get_shapepoly()</code></a> 获取形状多边形</p>
+</li>
+<li><p>使用事件</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onclick" target="_blank" rel="noopener"><code>onclick()</code></a> 当鼠标点击<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onrelease" target="_blank" rel="noopener"><code>onrelease()</code></a> 当鼠标释放<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ondrag" target="_blank" rel="noopener"><code>ondrag()</code></a> 当鼠标拖动</p>
+</li>
+<li><p>Turtle专有方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.begin_poly" target="_blank" rel="noopener"><code>begin_poly()</code></a> 开始记录多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.end_poly" target="_blank" rel="noopener"><code>end_poly()</code></a> 结束记录多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.get_poly" target="_blank" rel="noopener"><code>get_poly()</code></a> 获取多边形<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clone" target="_blank" rel="noopener"><code>clone()</code></a> 克隆<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getturtle" target="_blank" rel="noopener"><code>getturtle()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getpen" target="_blank" rel="noopener"><code>getpen()</code></a> 获取海龟画笔<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getscreen" target="_blank" rel="noopener"><code>getscreen()</code></a> 获取屏幕<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setundobuffer" target="_blank" rel="noopener"><code>setundobuffer()</code></a> 设置撤消缓冲区<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.undobufferentries" target="_blank" rel="noopener"><code>undobufferentries()</code></a> 撤消缓冲区条目数</p>
+</li>
+</ul>
+<h4 id="TurtleScreen-Screen-方法"><a href="#TurtleScreen-Screen-方法" class="headerlink" title="TurtleScreen/Screen 方法"></a>TurtleScreen/Screen 方法</h4><ul>
+<li><p>窗口控制</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bgcolor" target="_blank" rel="noopener"><code>bgcolor()</code></a> 背景颜色<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bgpic" target="_blank" rel="noopener"><code>bgpic()</code></a> 背景图片<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clear" target="_blank" rel="noopener"><code>clear()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.clearscreen" target="_blank" rel="noopener"><code>clearscreen()</code></a> 清屏<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.reset" target="_blank" rel="noopener"><code>reset()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.resetscreen" target="_blank" rel="noopener"><code>resetscreen()</code></a> 重置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.screensize" target="_blank" rel="noopener"><code>screensize()</code></a> 屏幕大小<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setworldcoordinates" target="_blank" rel="noopener"><code>setworldcoordinates()</code></a> 设置世界坐标系</p>
+</li>
+<li><p>动画控制</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.delay" target="_blank" rel="noopener"><code>delay()</code></a> 延迟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.tracer" target="_blank" rel="noopener"><code>tracer()</code></a> 追踪<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.update" target="_blank" rel="noopener"><code>update()</code></a> 更新</p>
+</li>
+<li><p>使用屏幕事件</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.listen" target="_blank" rel="noopener"><code>listen()</code></a> 监听<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkey" target="_blank" rel="noopener"><code>onkey()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkeyrelease" target="_blank" rel="noopener"><code>onkeyrelease()</code></a> 当键盘按下并释放<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onkeypress" target="_blank" rel="noopener"><code>onkeypress()</code></a> 当键盘按下<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onclick" target="_blank" rel="noopener"><code>onclick()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.onscreenclick" target="_blank" rel="noopener"><code>onscreenclick()</code></a> 当点击屏幕<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.ontimer" target="_blank" rel="noopener"><code>ontimer()</code></a> 当达到定时<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.mainloop" target="_blank" rel="noopener"><code>mainloop()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.done" target="_blank" rel="noopener"><code>done()</code></a> 主循环</p>
+</li>
+<li><p>设置与特殊方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.mode" target="_blank" rel="noopener"><code>mode()</code></a><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.colormode" target="_blank" rel="noopener"><code>colormode()</code></a> 颜色模式<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getcanvas" target="_blank" rel="noopener"><code>getcanvas()</code></a> 获取画布<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.getshapes" target="_blank" rel="noopener"><code>getshapes()</code></a> 获取形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.register_shape" target="_blank" rel="noopener"><code>register_shape()</code></a> | <a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.addshape" target="_blank" rel="noopener"><code>addshape()</code></a> 添加形状<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.turtles" target="_blank" rel="noopener"><code>turtles()</code></a> 所有海龟<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.window_height" target="_blank" rel="noopener"><code>window_height()</code></a> 窗口高度<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.window_width" target="_blank" rel="noopener"><code>window_width()</code></a> 窗口宽度</p>
+</li>
+<li><p>输入方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.textinput" target="_blank" rel="noopener"><code>textinput()</code></a> 文本输入<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.numinput" target="_blank" rel="noopener"><code>numinput()</code></a> 数字输入</p>
+</li>
+<li><p>Screen 专有方法</p>
+<p><a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.bye" target="_blank" rel="noopener"><code>bye()</code></a> 退出<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.exitonclick" target="_blank" rel="noopener"><code>exitonclick()</code></a> 当点击时退出<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.setup" target="_blank" rel="noopener"><code>setup()</code></a> 设置<a href="https://docs.python.org/zh-cn/3/library/turtle.html#turtle.title" target="_blank" rel="noopener"><code>title()</code></a> 标题</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>python常用库</category>
+        <category>图形化</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>常用库</tag>
+        <tag>图形</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之单例模式</title>
+    <url>/2020/07/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式之单例模式-对象池模式"><a href="#设计模式之单例模式-对象池模式" class="headerlink" title="设计模式之单例模式/对象池模式"></a>设计模式之单例模式/对象池模式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>本文介绍单例模式，即一个类仅允许一个实例并且为该实例提供全局的引用，并延申到对象池模式。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>单例模式就是在对一个类而言，我们只<strong>允许</strong>创建该类的一个实例，并且在所有使用到该类对象的地方都使用该实例。这需要在程序中为这个实例提供一个全局的引用。</p>
+<h3 id="如何做"><a href="#如何做" class="headerlink" title="如何做"></a>如何做</h3><ul>
+<li>将该类的构造函数设置为private，以组个从类的外部直接构造的途径。</li>
+<li>设置一个public的函数，用以从内部调用构造函数并返回一个实例。</li>
+<li>设置一个static的字段，在第一次调用上述函数的时候，赋值为构造的实例，并在以后调用时返回该字段存储的实例。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>全局访问，导致错误风险增加。</li>
+<li>单例可能无法满足业务逻辑。</li>
+</ul>
+<h3 id="延申"><a href="#延申" class="headerlink" title="延申"></a>延申</h3><p>单例模式规定只能创建一个对象，与之类似的<strong>对象池模式</strong>可以创建多个对象，并对这些对象进行管理。对象池模式保留了单例模式节省对象创建时间空间的优势，为全局提供对象池中的对象的访问和控制。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>单例模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之策略模式</title>
+    <url>/2020/07/01/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式之策略模式"><a href="#设计模式之策略模式" class="headerlink" title="设计模式之策略模式"></a>设计模式之策略模式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在传统的类的继承关系中我们可以在一定程度上实现代码的复用，但是这种复用的关系是树状的，即子类必须且只能继承父类的所有方法（或重载），如果处于另一分支的子类想要实现相同的功能，只能通过复制粘贴的方式。为了解决这个问题，我们采用策略模式来设计类之间的关系，改变树状继承的弊端。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>###</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>策略模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UML</title>
+    <url>/2020/07/03/UML/</url>
+    <content><![CDATA[<h1 id="UML"><a href="#UML" class="headerlink" title="UML"></a>UML</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>UML（Unified Modling Language）是一种描述软件架构（以及其他系统架构）的通用语言，主要采用图形和文字来描述抽象主体之间的关系。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="描述的对象"><a href="#描述的对象" class="headerlink" title="描述的对象"></a>描述的对象</h3><p>UML图描述的对象和目的有所不同，</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>UML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之装饰模式</title>
+    <url>/2020/07/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>设计模式之代理模式</title>
+    <url>/2020/07/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式之代理模式"><a href="#设计模式之代理模式" class="headerlink" title="设计模式之代理模式"></a>设计模式之代理模式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>代理模式为另一个对象提供本对象的一个占位符或替身以便访问控制。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>使用代理模式主要不同的目的，远程代理，虚拟代理和保护代理。简而言之就是在访问时需要遵从某种逻辑，而代理将这些逻辑封装起来。</p>
+<h3 id="保护代理"><a href="#保护代理" class="headerlink" title="保护代理"></a>保护代理</h3><p>对于我们想要访问的对象，我们不希望其能够被轻易改变，或者我们需要在访问前审查访问者的访问权限，此时我们就设置一个保护代理，相当于门卫的功能。</p>
+<p>例如在数据库中，数据库访问对象DAO（Database access object）提供了数据库的基本查询，修改，增删功能，但系统中存在不同用户，低权限者不允许对数据库进行修改和增删，只有高权限者才能进行这些操作。此时，我们就可以采用保护代理，对DAO对象进行代理，从而实现对访问者权限的审查。</p>
+<h3 id="虚拟代理"><a href="#虚拟代理" class="headerlink" title="虚拟代理"></a>虚拟代理</h3>]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>代理模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之访问者模式</title>
+    <url>/2020/07/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>设计模式</title>
+    <url>/2020/07/03/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在进行复杂软件编程之前，首先需要在更高的抽象层级上规划软件的架构，然后自顶向下逐渐填充细节。设计模式(Design Pattern)是一类设计过程中的经验的总称，对应于一类抽象的需求和实现需求的类，接口的结构。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>主要的设计模式包括简单工厂，抽象工厂，单例模式，对象池模式，修饰者模式，观察者模式，策略模式，代理模式，状态模式等。</p>
+<p>设计模式的上层抽象是OOA，即分析模式，即分析软件架构的通用模式。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之观察者模式</title>
+    <url>/2020/07/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式之观察者模式"><a href="#设计模式之观察者模式" class="headerlink" title="设计模式之观察者模式"></a>设计模式之观察者模式</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>在一个系统中，有两个对象A，B。如果B需要在A发生改变时收到A改变的通知，以便于采取行动，那么我们就可以采用观察者模式满足需求。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><blockquote>
+<p>观察者模式定义了对象之间一对多的关系，当一个对象（被观察者）改变的时候，所有的依赖对象（观察者）都会收到通知并自动更新。</p>
+</blockquote>
+<h3 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h3><ul>
+<li>有两类，A为股票交易系统，B为使用这个系统的股民，那么A在更新股票数据之后，必须立即将结果推送到B以使B及时获取最新资讯。</li>
+<li>A为网购客户端，B为网购用户，A希望在商品更新降价时向B发出推送，以增加销量。</li>
+</ul>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3>]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>观察者模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式之抽象工厂</title>
+    <url>/2020/06/30/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/</url>
+    <content><![CDATA[<h1 id="编程模式之抽象工厂"><a href="#编程模式之抽象工厂" class="headerlink" title="编程模式之抽象工厂"></a>编程模式之抽象工厂</h1><h1 id="设计模式之抽象工厂"><a href="#设计模式之抽象工厂" class="headerlink" title="设计模式之抽象工厂"></a>设计模式之抽象工厂</h1><h2 id="README"><a href="#README" class="headerlink" title="README"></a>README</h2><p>抽象工厂是一类将对象构造的逻辑封装为一系列类并为这些类提供更高层抽象接口的编程模式。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="是什么"><a href="#是什么" class="headerlink" title="是什么"></a>是什么</h3><p>当我们需要为对象的构造提供某种逻辑，比如随机构造，批量构造，选择构造等时，把这种逻辑封装进一个类的方法，那么这个类就叫抽象工厂类。</p>
+<h3 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h3><p>一个抽象工厂类需要一个工厂函数，用于构造对象，在函数中实现需要的逻辑。</p>
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>如果将工厂进行抽象，就可以得到一个接口或者抽象类，从而得到一些列工厂类，用于不同的构造需求。</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>Java</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>抽象工厂</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+</search>
